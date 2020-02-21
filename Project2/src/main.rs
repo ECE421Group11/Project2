@@ -1,22 +1,6 @@
 #![allow(non_snake_case)]
-
-use std::cell::RefCell;
-use std::rc::Rc;
-#[derive(Clone, Debug, PartialEq)]
-enum NodeColor {
- Red,
- Black,
-}
-type Tree = Rc<RefCell<TreeNode<u32>>>;
-type RedBlackTree= Option<Tree>;
-struct TreeNode<T> {
- pub color: NodeColor,
- pub key: T,
- pub parent: RedBlackTree,
- left: RedBlackTree,
- right: RedBlackTree,
-}
-
+//extern crate red_black_tree;
+//use red_black_tree::RedBlackTree;
 
 fn main() {
     println!("Project 2");
