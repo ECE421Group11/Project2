@@ -125,10 +125,37 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
     pub fn is_empty(&self) -> bool{
         return self.len() == 0;
     }
+    
+    pub fn get_node(&self, val: T) -> Pointer{
+        let node = self.get_node_from_node(self.root, val);
 
+        if node.is_null(){
+            panic!("Node does not exist!")
+        }
+        return node;
+    }
+
+    pub fn get_node_from_node(&self, node: Pointer, val:T) -> Pointer{
+        if node.is_null(){
+            return Pointer::null();
+        }
+        else{
+            if self[node].value == val{
+                return node;
+            }
+            else if val > self[node].value{
+                return self.get_node_from_node(self[node].right, val);
+            }
+            else{
+                return self.get_node_from_node(self[node].left, val);
+            }
+        }
+    }
+    
     pub fn get_height(&self) -> u32{
         return self.get_height_from_node(self.root);
     }
+
 
     pub fn get_height_from_node(&self, node: Pointer) -> u32{
         if node.is_null(){
@@ -138,6 +165,24 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
             let left = self.get_height_from_node(self[node].left);
             let right = self.get_height_from_node(self[node].right);
             return cmp::max(left, right) + 1;
+        }
+    }
+
+    pub fn count_leaf_nodes(&self) -> u32{
+        return self.count_leaf_nodes_from_node(self.root);
+    }
+
+    pub fn count_leaf_nodes_from_node(&self, node: Pointer) -> u32{
+        if node.is_null(){
+            return 0;
+        }
+        else{
+            let left = self.get_height_from_node(self[node].left);
+            let right = self.get_height_from_node(self[node].right);
+            if left == right && left == 0{
+                return 1;
+            }
+            return left + right;
         }
     }
 
