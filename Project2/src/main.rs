@@ -74,13 +74,16 @@ fn main() {
     println!("{:?}", rbtree);
 
     println!("");
+    
+    let node25 = rbtree[rbtree.root].left;
+    
+    
+    rbtree.right_rotate(node25);
     println!("After right rotate");
-
-    rbtree.right_rotate(rbtree.root);
     println!("{:?}", rbtree);
 
     println!("");
+    rbtree.left_rotate(node25);
     println!("After left rotate");
-    rbtree.left_rotate(rbtree.root);
     println!("{:?}", rbtree);
 }

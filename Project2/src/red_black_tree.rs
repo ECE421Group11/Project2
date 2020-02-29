@@ -201,12 +201,19 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
     pub fn left_rotate(&mut self, current: Pointer){
         let right = self[current].right;
 
+        if right.is_null(){
+            return;
+        }
+
         let right_left = self[right].left;
         let parent = self[current].parent;
 
         // set W's right child to be B
         self[current].right = right_left;
-        self[right_left].parent = current;
+
+        if !right_left.is_null(){
+            self[right_left].parent = current;
+        }
 
         // setting W's parent to be V
         self[current].parent = right;
@@ -220,8 +227,13 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
         }
         else{
             let parent_right = self[parent].right;
-            if self[parent_right].value == self[current].value{ // set V to parent right
-                self[parent].right = right;
+            if !parent_right.is_null(){
+                if self[parent_right].value == self[current].value{ // set V to parent right
+                    self[parent].right = right;
+                }
+                else{ // set V to parent left
+                    self[parent].left = right;
+                }
             }
             else{ // set V to parent left
                 self[parent].left = right;
@@ -232,12 +244,19 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
     pub fn right_rotate(&mut self, current: Pointer){
         let left = self[current].left;
 
+        if left.is_null(){
+            return;
+        }
+
         let left_right = self[left].right;
         let parent = self[current].parent;
 
         // set V's left child to be B
         self[current].left = left_right;
-        self[left_right].parent = current;
+
+        if !left_right.is_null(){
+            self[left_right].parent = current;
+        }
 
         // setting V's parent to be W
         self[current].parent = left;
@@ -251,8 +270,13 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
         }
         else{
             let parent_left = self[parent].left;
-            if self[parent_left].value == self[current].value{ // set W to parent left
-                self[parent].left = left;
+            if !parent_left.is_null(){
+                if self[parent_left].value == self[current].value{ // set W to parent left
+                    self[parent].left = left;
+                }
+                else{ // set W to parent right
+                    self[parent].right = left;
+                }
             }
             else{ // set W to parent right
                 self[parent].right = left;
