@@ -39,29 +39,6 @@ fn test_height(){
     assert_eq!(rbtree.get_height(), 4)
 }
 
-fn main() {
-    let mut rbtree = RedBlackTree::<u32>::new();
-
-    rbtree.insert(50);
-    rbtree.insert(25);
-    rbtree.insert(15);
-    rbtree.insert(35);
-    rbtree.insert(75);
-    rbtree.insert(60);
-    rbtree.insert(90);
-    
-    let node25 = rbtree[rbtree.root].left;
-    
-    rbtree.right_rotate(node25);
-
-    assert_eq!(rbtree[node25].left.is_null(), true);
-    assert_eq!(rbtree[rbtree[node25].right].value, 35);
-
-    rbtree.left_rotate(node25);
-    assert_eq!(rbtree[node25].left.is_null(), true);
-    assert_eq!(rbtree[node25].right.is_null(), true);
-}
-
 #[test]
 fn simple_avl_insert(){
     let mut avltree = AVLTree::<u32>::new();
@@ -77,6 +54,21 @@ fn simple_avl_insert(){
     assert_eq!(avltree[avltree.root].value, 2);
 }
 
+#[test]
+fn avl_rebalance(){
+    let mut avltree = AVLTree::<u32>::new();
+    avltree.insert(1);
+    avltree.insert(2);
+    avltree.insert(3);
+    avltree.insert(4);
+    avltree.insert(5);
+    avltree.insert(6);
+    avltree.insert(7);
+    assert_eq!(avltree.get_height(), 3);
+    avltree.insert(8);
+    assert_eq!(avltree.get_height(), 4);
+}
+
 fn main() {
     let mut avltree = AVLTree::<u32>::new();
     avltree.insert(1);
@@ -85,10 +77,11 @@ fn main() {
     avltree.insert(4);
     avltree.insert(5);
     avltree.insert(6);
+    avltree.insert(7);
+    avltree.insert(10);
 
     println!("{:?}", avltree);
     println!("{:?}", avltree.get_height());
-    assert_eq!(avltree[avltree.root].value, 2);
 
     //let mut rbtree = RedBlackTree::<u32>::new();
     /*rbtree.insert(50);

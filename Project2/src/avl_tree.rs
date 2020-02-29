@@ -80,26 +80,27 @@ impl<T: PartialOrd + Copy> AVLTree<T> {
         }
     }
 
+    // Returns total number of nodes in tree
     pub fn len(&self) -> usize{
         return self.slab.len();
     }
 
+    // Returns true if tree is empty, false otherwise
     pub fn is_empty(&self) -> bool{
         return self.len() == 0;
     }
 
+    // Returns height of tree
     pub fn get_height(&self) -> u32{
         return self.get_height_from_node(self.root);
     }
 
-    /*pub fn get_balance_factor(&self) -> i32{
-        return (self.get_height_from_node(self[self.root].right) as i32 - self.get_height_from_node(self[self.root].left) as i32);
-    }*/
-
+    // Returns balance factor used to determine balance of AVL tree. Neg number = left heavy, pos number = right heavy
     pub fn get_balance_factor(&self, node: Pointer) -> i32{
         return (self.get_height_from_node(self[node].right) as i32 - self.get_height_from_node(self[node].left) as i32);
     }
 
+    // Returns height below node passed as argument
     pub fn get_height_from_node(&self, node: Pointer) -> u32{
         if node.is_null(){
             return 0;
@@ -111,6 +112,7 @@ impl<T: PartialOrd + Copy> AVLTree<T> {
         }
     }
 
+    // Insert node with value val into tree
     pub fn insert(&mut self, val: T){
         if self.root.is_null(){
             self.root = Pointer(self.slab.insert(Node {
@@ -250,40 +252,25 @@ impl<T: PartialOrd + Copy> AVLTree<T> {
             }
         }
     }
+
+    // Rebalance to ensure AVL tree properties are maintained
     pub fn rebalance(&mut self, mut node: Pointer){
         while(!node.is_null()){
             println!("Balance Facor {:?}", self.get_balance_factor(node));
             if self.get_balance_factor(node) < -1{
-                println!("Left Heavy Need to right rotate");
-                println!("HEIGHT {:?}", self.get_height());
+                // Left heavy so rotate right
                 self.right_rotate(node);
-                //self.right_rotate(self.root);
-                println!("HEIGHT {:?}", self.get_height());
             }
             else if self.get_balance_factor(node) > 1{
-                println!("Right Heavy Need to left rotate");
-                println!("HEIGHT {:?}", self.get_height());
+                // Right heavy so rotate left
                 self.left_rotate(node);
-                //self.left_rotate(self.root);
-                println!("HEIGHT {:?}", self.get_height());
             }
             node = self[node].parent;
         }
-        /*if self.get_balance_factor() < -1{
-            println!("Left Heavy Need to right rotate");
-            println!("HEIGHT {:?}", self.get_height());
-            self.right_rotate(node);
-            //self.right_rotate(self.root);
-            println!("HEIGHT {:?}", self.get_height());
-        }
-        else if self.get_balance_factor() > 1{
-            println!("Right Heavy Need to left rotate");
-            println!("HEIGHT {:?}", self.get_height());
-            self.left_rotate(node);
-            //self.left_rotate(self.root);
-            println!("HEIGHT {:?}", self.get_height());
-        }
-        else{return;}*/
+    }
+
+    pub fn delete(&mut self, val: T){
+        
     }
 
 }
