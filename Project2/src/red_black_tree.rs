@@ -20,8 +20,37 @@ impl<T: fmt::Debug + Copy + fmt::Debug> fmt::Debug for RedBlackTree<T> {
             }
             else{
                 write_recursive(rbTree, rbTree[node].left, f);
-                write!(f, "({:?}, {:?}), ", rbTree[node].value, rbTree[node].color);
+                let left = rbTree[node].left;
+                let right = rbTree[node].right;
+                let parent = rbTree[node].parent;
+
+                write!(f, "(val = {:?}, color = {:?}, ", rbTree[node].value, rbTree[node].color);
+                
+                if left.is_null(){
+                    write!(f, "left = NULL, ");
+                }
+                else{
+                    write!(f, "left = {:?}, ", rbTree[left].value);
+                }
+
+                if right.is_null(){
+                    write!(f, "right = NULL, ");
+                }
+                else{
+                    write!(f, "right = {:?}, ", rbTree[right].value);
+                }
+
+                if parent.is_null(){
+                    write!(f, "parent = NULL, ");
+                }
+                else{
+                    write!(f, "parent = {:?},", rbTree[parent].value);
+                }
+
+                write!(f, "), \n");
+
                 write_recursive(rbTree, rbTree[node].right, f);
+
             }
         }
 
@@ -33,7 +62,7 @@ impl<T: fmt::Debug + Copy + fmt::Debug> fmt::Debug for RedBlackTree<T> {
     }
 }
 
-#[derive(Eq, PartialEq, Copy, Clone)]
+#[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub struct Pointer(usize);
 
 impl Pointer {
@@ -70,17 +99,18 @@ pub enum NodeColor {
     Black,
 }
 
+#[derive(Debug)]
 pub struct Node<T> {
-    value: T,
-    right: Pointer,
-    left: Pointer,
-    parent: Pointer,
-    color: NodeColor,
+    pub value: T,
+    pub right: Pointer,
+    pub left: Pointer,
+    pub parent: Pointer,
+    pub color: NodeColor,
 }
 
 pub struct RedBlackTree<T> {
-    slab: Slab<Node<T>>,
-    root: Pointer,
+    pub slab: Slab<Node<T>>,
+    pub root: Pointer,
 }
 
 impl<T: PartialOrd + Copy> RedBlackTree<T> {
@@ -168,8 +198,66 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
         }
     }
 
-    pub fn left_rotate(&self, left: Pointer, right: Pointer, parent: Pointer){
-        
+    pub fn left_rotate(&mut self, current: Pointer){
+        let right = self[current].right;
+
+        let right_left = self[right].left;
+        let parent = self[current].parent;
+
+        // set W's right child to be B
+        self[current].right = right_left;
+        self[right_left].parent = current;
+
+        // setting W's parent to be V
+        self[current].parent = right;
+        self[right].left = current;
+
+        // Set V's parent to be W's old parent
+        self[right].parent = parent;
+
+        if parent.is_null(){
+            self.root = right;
+        }
+        else{
+            let parent_right = self[parent].right;
+            if self[parent_right].value == self[current].value{ // set V to parent right
+                self[parent].right = right;
+            }
+            else{ // set V to parent left
+                self[parent].left = right;
+            }
+        }
+    }
+
+    pub fn right_rotate(&mut self, current: Pointer){
+        let left = self[current].left;
+
+        let left_right = self[left].right;
+        let parent = self[current].parent;
+
+        // set V's left child to be B
+        self[current].left = left_right;
+        self[left_right].parent = current;
+
+        // setting V's parent to be W
+        self[current].parent = left;
+        self[left].right = current;
+
+        // Set W's parent to be V's old parent
+        self[left].parent = parent;
+
+        if parent.is_null(){
+            self.root = left;
+        }
+        else{
+            let parent_left = self[parent].left;
+            if self[parent_left].value == self[current].value{ // set W to parent left
+                self[parent].left = left;
+            }
+            else{ // set W to parent right
+                self[parent].right = left;
+            }
+        }
     }
 
 }

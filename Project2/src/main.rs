@@ -38,6 +38,27 @@ fn test_height(){
     assert_eq!(rbtree.get_height(), 3)
 }
 
+# [test]
+fn test_root_rotations(){
+    let mut rbtree = RedBlackTree::<u32>::new();
+
+    rbtree.insert(50);
+    rbtree.insert(25);
+    rbtree.insert(15);
+    rbtree.insert(35);
+    rbtree.insert(75);
+    rbtree.insert(60);
+    rbtree.insert(90);
+
+    assert_eq!(rbtree[rbtree.root].value, 50);
+
+    rbtree.right_rotate(rbtree.root);
+    assert_eq!(rbtree[rbtree.root].value, 25);
+
+    rbtree.left_rotate(rbtree.root);
+    assert_eq!(rbtree[rbtree.root].value, 50);
+
+}
 
 fn main() {
     let mut rbtree = RedBlackTree::<u32>::new();
@@ -51,6 +72,15 @@ fn main() {
     rbtree.insert(90);
 
     println!("{:?}", rbtree);
-    println!("{:?}", rbtree.get_height());
 
+    println!("");
+    println!("After right rotate");
+
+    rbtree.right_rotate(rbtree.root);
+    println!("{:?}", rbtree);
+
+    println!("");
+    println!("After left rotate");
+    rbtree.left_rotate(rbtree.root);
+    println!("{:?}", rbtree);
 }
