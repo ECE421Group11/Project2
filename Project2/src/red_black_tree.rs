@@ -4,19 +4,15 @@
 use slab::Slab;
 use std::fmt;
 use std::ops::{Index, IndexMut};
-use std::cell::RefCell;
-use std::rc::Rc;
 use std::cmp;
 extern crate slab;
 
 impl<T: fmt::Debug + Copy + fmt::Debug> fmt::Debug for RedBlackTree<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut first = true;
-        let mut n = self.root;
 
         fn write_recursive<T: fmt::Debug + Copy>(rbTree: &RedBlackTree<T>, node: Pointer, f: &mut fmt::Formatter){
             if node.is_null(){
-                write!(f, "");
+                write!(f, "").unwrap();
             }
             else{
                 write_recursive(rbTree, rbTree[node].left, f);
@@ -24,30 +20,30 @@ impl<T: fmt::Debug + Copy + fmt::Debug> fmt::Debug for RedBlackTree<T> {
                 let right = rbTree[node].right;
                 let parent = rbTree[node].parent;
 
-                write!(f, "(val = {:?}, color = {:?}, ", rbTree[node].value, rbTree[node].color);
+                write!(f, "(val = {:?}, color = {:?}, ", rbTree[node].value, rbTree[node].color).unwrap();
                 
                 if left.is_null(){
-                    write!(f, "left = NULL, ");
+                    write!(f, "left = NULL, ").unwrap();
                 }
                 else{
-                    write!(f, "left = {:?}, ", rbTree[left].value);
+                    write!(f, "left = {:?}, ", rbTree[left].value).unwrap();
                 }
 
                 if right.is_null(){
-                    write!(f, "right = NULL, ");
+                    write!(f, "right = NULL, ").unwrap();
                 }
                 else{
-                    write!(f, "right = {:?}, ", rbTree[right].value);
+                    write!(f, "right = {:?}, ", rbTree[right].value).unwrap();
                 }
 
                 if parent.is_null(){
-                    write!(f, "parent = NULL, ");
+                    write!(f, "parent = NULL, ").unwrap();
                 }
                 else{
-                    write!(f, "parent = {:?},", rbTree[parent].value);
+                    write!(f, "parent = {:?},", rbTree[parent].value).unwrap();
                 }
 
-                write!(f, "), \n");
+                write!(f, "), \n").unwrap();
 
                 write_recursive(rbTree, rbTree[node].right, f);
 
@@ -145,6 +141,121 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
         }
     }
 
+    pub fn get_uncle(&self, node: Pointer) -> Pointer{
+        let parent = self[node].parent;
+        if parent.is_null(){
+            return Pointer::null();
+        }
+
+        let grandparent = self[parent].parent;
+
+        if grandparent.is_null(){
+            return Pointer::null();
+        }
+
+        let grandparent_left = self[grandparent].left;
+        let grandparent_right = self[grandparent].right;
+        
+        if grandparent_left.is_null(){
+            return Pointer::null();
+        }
+
+        if grandparent_right.is_null(){
+            return Pointer::null();
+        }
+
+        if self[parent].value == self[grandparent_left].value{
+            return grandparent_right;
+        }
+
+        return grandparent_left;
+
+    }
+
+    pub fn insert_fixup(&mut self, node: Pointer){
+        let parent = self[node].parent;
+        if self[node].parent.is_null(){
+            return self.insert_case1(node);
+        }
+        
+        if self[parent].color == NodeColor::Black{
+            return self.insert_case2(node)
+        }
+
+        let uncle = self.get_uncle(node);
+
+        if uncle.is_null(){
+            return self.insert_case4(node);
+        }
+        if self[uncle].color == NodeColor::Black{
+            return self.insert_case4(node);
+        }
+
+        return self.insert_case3(node)
+
+    }
+
+    pub fn insert_case1(&mut self, node: Pointer){
+        self[node].color = NodeColor::Black;
+    }
+
+    pub fn insert_case2(&mut self, _node: Pointer){
+        return
+    }
+
+    pub fn insert_case3(&mut self, node: Pointer){
+        let parent = self[node].parent;
+        let uncle = self.get_uncle(node);
+        let grandparent = self[parent].parent;
+
+        self[parent].color = NodeColor::Black;
+        self[uncle].color = NodeColor::Black;
+        self[grandparent].color = NodeColor::Red;
+
+        self.insert_fixup(grandparent);
+    }
+
+    pub fn insert_case4(&mut self, node: Pointer){
+
+        let parent = self[node].parent;
+        let grandparent = self[parent].parent;
+
+        let parent_left = self[parent].left;
+        let parent_right = self[parent].right;
+
+        let grandparent_left = self[grandparent].left;
+        let grandparent_right = self[grandparent].right;
+
+        let mut n = node;
+
+        if !parent_right.is_null() && !grandparent_left.is_null() && (self[n].value == self[parent_right].value) && (self[parent].value == self[grandparent_left].value){
+            self.left_rotate(parent);
+            n = self[n].left;
+        }
+        else if !parent_left.is_null() && !grandparent_right.is_null() && (self[n].value == self[parent_left].value) && (self[parent].value == self[grandparent_right].value){
+            self.right_rotate(parent);
+            n = self[n].right;
+        }
+        self.insert_case4_part2(n);
+    }
+
+    pub fn insert_case4_part2(&mut self, node: Pointer){
+        let parent = self[node].parent;
+        let grandparent = self[parent].parent;
+
+        let parent_left = self[parent].left;
+
+        if self[node].value == self[parent_left].value{
+            self.right_rotate(grandparent);
+        }
+        else{
+            self.left_rotate(grandparent);
+        }
+
+        self[parent].color = NodeColor::Black;
+        self[grandparent].color = NodeColor::Red;
+    }
+
     pub fn insert(&mut self, val: T){
         if self.root.is_null(){
             self.root = Pointer(self.slab.insert(Node {
@@ -156,11 +267,12 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
             }));
         }
         else{
-            self.insert_below_node(val, self.root);
+            let new_node = self.insert_below_node(val, self.root);
+            self.insert_fixup(new_node);
         }
     }
 
-    pub fn insert_below_node(&mut self, val: T, node: Pointer){
+    pub fn insert_below_node(&mut self, val: T, node: Pointer) -> Pointer{
         let nodeValue = self[node].value;
         let left = self[node].left;
         let right = self[node].right;
@@ -175,25 +287,27 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
                     right: Pointer::null(),
                     left: Pointer::null(),
                     parent: node,
-                    color: NodeColor::Black,
+                    color: NodeColor::Red,
                 }));
+                return self[node].right;
             }
             else{
-                self.insert_below_node(val, right);
+                return self.insert_below_node(val, right);
             }
         }
-        else if val < nodeValue{
+        else{
             if left.is_null(){
                 self[node].left = Pointer(self.slab.insert(Node {
                     value: val,
                     right: Pointer::null(),
                     left: Pointer::null(),
                     parent: node,
-                    color: NodeColor::Black,
+                    color: NodeColor::Red,
                 }));
+                return self[node].left;
             }
             else{
-                self.insert_below_node(val, left);
+                return self.insert_below_node(val, left);
             }
         }
     }
