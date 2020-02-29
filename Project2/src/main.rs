@@ -7,10 +7,12 @@ fn main() {
     println!("Project 2");
 
     let mut AVLtree = AVLTreeRoot::<u32>::new();
+    println!("Tree Empty? {}", AVLtree.is_empty());
     AVLtree.insert(1);
     AVLtree.insert(2);
     AVLtree.insert(0);
     AVLtree.print();
+    println!("Tree Empty? {}", AVLtree.is_empty());
 
 
 }

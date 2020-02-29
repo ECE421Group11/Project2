@@ -22,11 +22,12 @@ impl<T:Ord + std::fmt::Debug> AVLTreeRoot<T>{
     pub fn new() -> Self{
         Self{root:None}
     }
+
     pub fn insert(&mut self, value:T){
         let mut current_tree = &mut self.root;
 
         while let Some(current_node) = current_tree{
-            // If less if value is less than current nodes vale, right if value is greater 
+            // Left if value is less than current nodes vale, right if value is greater 
             // than current node value, panic if value already exists. Until get to leaf
             match current_node.key.cmp(&value){
                 Ordering::Less => current_tree = &mut current_node.right,
@@ -34,7 +35,7 @@ impl<T:Ord + std::fmt::Debug> AVLTreeRoot<T>{
                 Ordering::Greater => current_tree = &mut current_node.left,
             }
         }
-        // Now at leaf so create new
+        // Now at leaf so create new and replace None leaf
         *current_tree = Some(Box::new(TreeNode{
             key: value,
             parent: None, 
@@ -46,7 +47,7 @@ impl<T:Ord + std::fmt::Debug> AVLTreeRoot<T>{
     pub fn delete(){
 
     }
-    
+
     pub fn count(){
 
     }
@@ -55,16 +56,17 @@ impl<T:Ord + std::fmt::Debug> AVLTreeRoot<T>{
 
     }
 
-    pub fn print(&mut self){
-        println!("PRINT TREE");
-        
+    pub fn print(&mut self){        
         let mut current_tree = &mut self.root;
         if let Some(current_node) = current_tree{
         println!("{:?}", current_node);
         }
     }
 
-    pub fn is_empty(){
-
+    pub fn is_empty(&mut self)->bool{
+        match &mut self.root{
+            Some(_) => false,
+            None => true,
+        }
     }
 }
