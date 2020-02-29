@@ -67,12 +67,12 @@ pub struct Pointer(usize);
 
 impl Pointer {
     #[inline]
-    fn null() -> Pointer {
+    pub fn null() -> Pointer {
         Pointer(!0)
     }
     
     #[inline]
-    fn is_null(&self) -> bool {
+    pub fn is_null(&self) -> bool {
         *self == Pointer::null()
     }
 }
