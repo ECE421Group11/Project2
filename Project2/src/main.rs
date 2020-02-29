@@ -1,6 +1,7 @@
 #![allow(non_snake_case)]
 //extern crate red_black_tree;
 use Project2::red_black_tree::RedBlackTree;
+use Project2::avl_tree::AVLTree;
 
 # [test]
 fn test_insert(){
@@ -40,9 +41,18 @@ fn test_height(){
 
 
 fn main() {
-    let mut rbtree = RedBlackTree::<u32>::new();
+    let mut avltree = AVLTree::<u32>::new();
 
-    rbtree.insert(50);
+    avltree.insert(1);
+    avltree.insert(3);
+    avltree.insert(2);
+
+    println!("{:?}", avltree);
+    println!("{:?}", avltree.get_height());
+    assert_eq!(avltree[avltree.root].value, 2);
+
+    //let mut rbtree = RedBlackTree::<u32>::new();
+    /*rbtree.insert(50);
     rbtree.insert(25);
     rbtree.insert(15);
     rbtree.insert(35);
@@ -51,6 +61,6 @@ fn main() {
     rbtree.insert(90);
 
     println!("{:?}", rbtree);
-    println!("{:?}", rbtree.get_height());
+    println!("{:?}", rbtree.get_height());*/
 
 }
