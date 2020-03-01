@@ -10,7 +10,7 @@ repository = "https://github.com/ECE421Group11/Project2"
 readme = "https://github.com/ECE421Group11/Project2"
 keywords = ["redblacktree", "avltree", "tree", "rbtree"]
 categories = ["data-structures", "algorithms"]
-license = "https://github.com/ECE421Group11/Project2"
+license = "license.txt"
 
 [dependencies]
 slab = "0.4.2"
