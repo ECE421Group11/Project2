@@ -7,6 +7,9 @@ use Project2::red_black_tree::RedBlackTree;
 use Project2::red_black_tree::NodeColor;
 
 #[allow(unused_imports)]
+use Project2::binary_tree::BinaryTree;
+
+#[allow(unused_imports)]
 use Project2::red_black_tree::Pointer;
 use Project2::command_line_interface::CommandLineInterface;
 
@@ -21,6 +24,7 @@ use std::str::FromStr;
 
 #[allow(unused_imports)]
 use std::env;
+
 
 #[test]
 fn test_rb_insert(){
@@ -239,8 +243,7 @@ fn avl_delete(){
 
 
 fn main() {
-    env::set_var("RUST_BACKTRACE", "1");    
-
+    env::set_var("RUST_BACKTRACE", "1"); 
     let mut intro = 1;
 
     // used to test the library
