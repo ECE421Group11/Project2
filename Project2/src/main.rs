@@ -1,5 +1,4 @@
 #![allow(non_snake_case)]
-//extern crate red_black_tree;
 #[allow(unused_imports)]
 use Project2::red_black_tree::RedBlackTree;
 
