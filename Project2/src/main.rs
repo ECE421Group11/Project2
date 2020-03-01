@@ -6,12 +6,9 @@ use Project2::red_black_tree::Pointer;
 use std::env;
 
 use Project2::avl_tree::AVLTree;
-<<<<<<< HEAD
-=======
 use std::io::{stdin, stdout, Write};
 use std::process::Command;
 use std::path::Path;
->>>>>>> 5b74904bed9627a0c0aedc462cc04961af2fffc8
 use std::env;
 
 #[test]
@@ -175,12 +172,6 @@ fn test_rb_height(){
     rbtree.insert(90);
     assert_eq!(rbtree.get_height(), 4)
 }
-
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-<<<<<<< HEAD
->>>>>>> 5b74904bed9627a0c0aedc462cc04961af2fffc8
 #[test]
 fn simple_avl_insert(){
     let mut avltree = AVLTree::<u32>::new();
@@ -188,13 +179,10 @@ fn simple_avl_insert(){
     avltree.insert(2);
     avltree.insert(3);
     assert_eq!(avltree[avltree.root].value, 2);
-<<<<<<< HEAD
-=======
 =======
 # [test]
 =======
 #[test]
->>>>>>> 256595002533caae6087c11aae85143fa6367b76
 fn test_rb_count_leafs(){
     let mut rbtree = RedBlackTree::<u32>::new();
     assert_eq!(rbtree.count_leaf_nodes(), 0);
