@@ -18,7 +18,6 @@ fn test_rb_insert(){
     rbtree.insert(75);
     rbtree.insert(60);
     rbtree.insert(90);
-    assert_eq!(rbtree.len(), 7);
 
     let node50 = rbtree.get_node(50);
     let node25 = rbtree.get_node(25);
@@ -82,11 +81,9 @@ fn test_rb_delete(){
     rbtree.insert(75);
     rbtree.insert(60);
     rbtree.insert(90);
-    assert_eq!(rbtree.len(), 7);
 
     rbtree.delete(50);
     
-    assert_eq!(rbtree.len(), 6);
 
     let node25 = rbtree.get_node(25);
     let node15 = rbtree.get_node(15);

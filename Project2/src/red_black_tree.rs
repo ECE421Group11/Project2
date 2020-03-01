@@ -118,12 +118,8 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
         }
     }
 
-    pub fn len(&self) -> usize{
-        return self.slab.len();
-    }
-
     pub fn is_empty(&self) -> bool{
-        return self.len() == 0;
+        return self.root.is_null();
     }
     
     pub fn get_node(&self, val: T) -> Pointer{
