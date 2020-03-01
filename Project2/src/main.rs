@@ -9,7 +9,6 @@ use Project2::avl_tree::AVLTree;
 use std::io::{stdin, stdout, Write};
 use std::process::Command;
 use std::path::Path;
-use std::env;
 
 #[test]
 fn test_rb_insert(){
@@ -172,6 +171,7 @@ fn test_rb_height(){
     rbtree.insert(90);
     assert_eq!(rbtree.get_height(), 4)
 }
+
 #[test]
 fn simple_avl_insert(){
     let mut avltree = AVLTree::<u32>::new();
@@ -179,14 +179,12 @@ fn simple_avl_insert(){
     avltree.insert(2);
     avltree.insert(3);
     assert_eq!(avltree[avltree.root].value, 2);
-=======
+}
+
 # [test]
-=======
-#[test]
 fn test_rb_count_leafs(){
     let mut rbtree = RedBlackTree::<u32>::new();
     assert_eq!(rbtree.count_leaf_nodes(), 0);
->>>>>>> 5b74904bed9627a0c0aedc462cc04961af2fffc8
 
     let mut avltree = AVLTree::<u32>::new();
     avltree.insert(3);
@@ -210,14 +208,26 @@ fn avl_rebalance(){
     assert_eq!(avltree.get_height(), 4);
 }
 
->>>>>>> 3e796668512b575bf975a252f96f302cdd5202e5
+#[test]
+fn avl_delete(){
+    let mut avltree = AVLTree::<u32>::new();
+    avltree.insert(1);
+    avltree.insert(2);
+    avltree.insert(3);
+    avltree.insert(4);
+    avltree.insert(5);
+    avltree.insert(6);
+    avltree.insert(7);
+    avltree.delete(5);
+    avltree.delete(6);
+    avltree.delete(7);
+    avltree.delete(3);
+    assert_eq!(avltree.get_height(), 2);
+}
 
 
 fn main() {
-<<<<<<< HEAD
     env::set_var("RUST_BACKTRACE", "1");
-=======
-<<<<<<< HEAD
 
     let mut intro = 1;
 
@@ -267,86 +277,3 @@ fn main() {
 
 fn test_rbt() {}
 fn test_avl() {}
-=======
-    env::set_var("RUST_BACKTRACE", "1");
-    let mut rbtree = RedBlackTree::<u32>::new();
->>>>>>> 5b74904bed9627a0c0aedc462cc04961af2fffc8
-
-    let mut avltree = AVLTree::<u32>::new();
-    println!("{:?}",avltree.is_empty());
-    avltree.insert(1);
-    avltree.insert(2);
-    avltree.insert(3);
-    avltree.insert(4);
-    avltree.insert(5);
-    avltree.insert(6);
-    avltree.insert(7);
-    //avltree.insert(10);
-    avltree.delete(5);
-    println!("{:?}", avltree);
-    println!("HEIGHT {:?}", avltree.get_height());
-    //println!("{:?}", avltree.len());
-
-    avltree.delete(6);
-    println!("{:?}", avltree);
-    println!("HEIGHT {:?}", avltree.get_height());
-    //println!("{:?}", avltree.len());
-
-    avltree.delete(7);
-    println!("{:?}", avltree);
-    println!("HEIGHT {:?}", avltree.get_height());
-    println!("ROOT {:?}", avltree[avltree.root].value);
-
-    avltree.delete(3);
-    println!("{:?}", avltree);
-    println!("HEIGHT {:?}", avltree.get_height());
-    println!("ROOT {:?}", avltree[avltree.root].value);
-
-    //avltree.delete(6);
-    //println!("{:?}", avltree);
-    //println!("HEIGHT {:?}", avltree.get_height());
-    //println!("{:?}", avltree.len());
-
-    //let mut rbtree = RedBlackTree::<u32>::new();
-    /*rbtree.insert(50);
-    rbtree.insert(25);
-    rbtree.insert(15);
-    rbtree.insert(35);
-    rbtree.insert(75);
-    rbtree.insert(60);
-    rbtree.insert(90);
-
-<<<<<<< HEAD
-    println!("{:?}", rbtree);
-=======
-    rbtree.print_in_order_traversal();
-
-    rbtree.delete(50);
-    rbtree.print_in_order_traversal();
-
->>>>>>> 5b74904bed9627a0c0aedc462cc04961af2fffc8
-
-    println!("");
-    
-    let node25 = rbtree[rbtree.root].left;
-    
-    
-    rbtree.right_rotate(node25);
-    println!("After right rotate");
-    println!("{:?}", rbtree);
-
-<<<<<<< HEAD
-    println!("");
-    rbtree.left_rotate(node25);
-    println!("After left rotate");
-    println!("{:?}", rbtree);*/
-}
-=======
-    let mut avltree = AVLTree::<u32>::new();
-    avltree.insert(3);
-    avltree.insert(2);
-    avltree.insert(1);
-    assert_eq!(avltree[avltree.root].value, 2);
-}
->>>>>>> 3e796668512b575bf975a252f96f302cdd5202e5
->>>>>>> 5b74904bed9627a0c0aedc462cc04961af2fffc8
