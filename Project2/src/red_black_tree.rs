@@ -20,7 +20,7 @@ impl<T: fmt::Debug + Copy + fmt::Debug> fmt::Debug for RedBlackTree<T> {
                 let right = rbTree[node].right;
                 let parent = rbTree[node].parent;
 
-                write!(f, "(val = {:?}, color = {:?}, ", rbTree[node].value, rbTree[node].color).unwrap();
+                write!(f, "(value = {:?}, color = {:?}, ", rbTree[node].value, rbTree[node].color).unwrap();
                 
                 if left.is_null(){
                     write!(f, "left = NULL, ").unwrap();
@@ -37,10 +37,10 @@ impl<T: fmt::Debug + Copy + fmt::Debug> fmt::Debug for RedBlackTree<T> {
                 }
 
                 if parent.is_null(){
-                    write!(f, "parent = NULL, ").unwrap();
+                    write!(f, "parent = NULL").unwrap();
                 }
                 else{
-                    write!(f, "parent = {:?},", rbTree[parent].value).unwrap();
+                    write!(f, "parent = {:?}", rbTree[parent].value).unwrap();
                 }
 
                 write!(f, "), \n").unwrap();
@@ -50,7 +50,7 @@ impl<T: fmt::Debug + Copy + fmt::Debug> fmt::Debug for RedBlackTree<T> {
             }
         }
 
-        write!(f, "Tree(")?;
+        write!(f, "In order traversal:(\n")?;
         write_recursive(&self, self.root, f);
         write!(f, ")")?;
         
@@ -109,7 +109,7 @@ pub struct RedBlackTree<T> {
     pub root: Pointer,
 }
 
-impl<T: PartialOrd + Copy> RedBlackTree<T> {
+impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
     // Returns a new doubly linked list.
     pub fn new() -> Self {
         RedBlackTree {
@@ -118,14 +118,14 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
         }
     }
 
-    pub fn len(&self) -> usize{
-        return self.slab.len();
-    }
-
     pub fn is_empty(&self) -> bool{
-        return self.len() == 0;
+        return self.root.is_null();
     }
     
+    pub fn print_in_order_traversal(&self){
+        println!("{:?}", self);
+    }
+
     pub fn get_node(&self, val: T) -> Pointer{
         let node = self.get_node_from_node(self.root, val);
 
@@ -281,6 +281,7 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
             self.right_rotate(parent);
             n = self[n].right;
         }
+
         self.insert_case4_part2(n);
     }
 
@@ -290,7 +291,7 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
 
         let parent_left = self[parent].left;
 
-        if self[node].value == self[parent_left].value{
+        if !parent_left.is_null() && self[node].value == self[parent_left].value{
             self.right_rotate(grandparent);
         }
         else{
@@ -299,6 +300,17 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
 
         self[parent].color = NodeColor::Black;
         self[grandparent].color = NodeColor::Red;
+    }
+
+    pub fn delete(&mut self, val: T){
+        let mut newTree = RedBlackTree::new();
+        for i in 0..self.slab.len(){
+            if self.slab[i].value != val{
+                newTree.insert(self.slab[i].value);
+            }
+        }
+        self.slab = newTree.slab;
+        self.root = newTree.root;
     }
 
     pub fn insert(&mut self, val: T){
@@ -443,10 +455,4 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
         }
     }
 
-}
-
-
-
-fn main() {
-    
 }
