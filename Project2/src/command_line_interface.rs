@@ -64,7 +64,7 @@ impl CommandLineInterface{
     }
 
     fn run_rbt(&self) {
-        let mut rbtree = RedBlackTree::<u32>::new();
+        let mut rbtree = RedBlackTree::<f32>::new();
         loop {
             // print the users cursor
             print!("Testing RBT > ");
@@ -82,7 +82,7 @@ impl CommandLineInterface{
                 }
                 _ => {},
             }
-            
+
             let mut parts = input.trim().split_whitespace();
             let command = parts.next().unwrap();
             let args = parts;
@@ -142,7 +142,7 @@ impl CommandLineInterface{
     }
 
     fn run_avl(&self) {
-        let mut avltree = AVLTree::<u32>::new();
+        let mut avltree = AVLTree::<f32>::new();
         loop {
             // print the users cursor
             print!("Testing AVL > ");

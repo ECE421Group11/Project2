@@ -295,12 +295,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
     // Delete node with value val
     pub fn delete(&mut self, val: T) /*-> T*/{
         let remove = self.get_node(val);
-<<<<<<< HEAD
         let parent = self[remove].parent;
-=======
-        if remove.is_null(){return;}
-        let mut parent = self[remove].parent;
->>>>>>> c1bfd7294a98dc742f866b43efdd0e9ab28f39b1
         // Three cases no children, 1 children, 2 children
         if self[remove].left.is_null() && self[remove].right.is_null(){
             // No children just delete node
