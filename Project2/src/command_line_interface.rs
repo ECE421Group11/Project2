@@ -64,7 +64,7 @@ impl CommandLineInterface{
     }
 
     fn run_rbt(&self) {
-        let mut rbtree = RedBlackTree::<f32>::new();
+        let mut rbtree = RedBlackTree::<f64>::new();
         loop {
             // print the users cursor
             print!("Testing RBT > ");
@@ -129,7 +129,7 @@ impl CommandLineInterface{
                     println!("{:?}", rbtree.get_height());
                 },
                 "print" => {
-                    println!("{:?}", rbtree.print_in_order_traversal());
+                    rbtree.print_in_order_traversal();
                 },
                 "isempty" => {
                     println!("{:?}", rbtree.is_empty());
@@ -142,7 +142,7 @@ impl CommandLineInterface{
     }
 
     fn run_avl(&self) {
-        let mut avltree = AVLTree::<f32>::new();
+        let mut avltree = AVLTree::<f64>::new();
         loop {
             // print the users cursor
             print!("Testing AVL > ");
@@ -207,7 +207,7 @@ impl CommandLineInterface{
                     println!("{:?}", avltree.get_height());
                 },
                 "print" => {
-                    println!("{:?}", avltree.print_in_order_traversal());
+                    avltree.print_in_order_traversal();
                 },
                 "isempty" => {
                     println!("{:?}", avltree.is_empty());
