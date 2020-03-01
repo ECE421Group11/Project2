@@ -76,11 +76,6 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
         }
     }
 
-    // Returns total number of nodes in tree
-    /*pub fn len(&self) -> usize{
-        return self.slab.len();
-    }*/
-
     // Returns true if tree is empty, false otherwise
     pub fn is_empty(&self) -> bool{
         return self.root.is_null();
@@ -253,11 +248,12 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
     // Rebalance to ensure AVL tree properties are maintained
     pub fn rebalance(&mut self, mut node: Pointer){
         while !node.is_null(){
-            if self.get_balance_factor(node) < -1{
+            let bal = self.get_balance_factor(node);
+            if bal < -1{
                 // Left heavy so rotate right
                 self.right_rotate(node);
             }
-            else if self.get_balance_factor(node) > 1{
+            else if bal > 1{
                 // Right heavy so rotate left
                 self.left_rotate(node);
             }
