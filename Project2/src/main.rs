@@ -8,7 +8,8 @@ use std::env;
 use Project2::avl_tree::AVLTree;
 use std::io::{stdin, stdout, Write};
 use std::process::Command;
-use std::path::Path;
+use std::iter::Peekable;
+use std::str::FromStr;
 
 #[test]
 fn test_rb_insert(){
@@ -259,6 +260,7 @@ fn main() {
 }
 
 fn test_rbt() {
+    let mut rbtree = RedBlackTree::<u32>::new();
     loop {
         // print the users cursor
         print!("Testing RBT > ");
@@ -276,9 +278,47 @@ fn test_rbt() {
             "exit" => return,
             "help" => {
                 println!("\nAvaliable commands:\n");
-                println!("    exit - Exit the program.");
-                println!("    help - Show available commands.");
+                println!("    exit       - Exit the program. (will delete the current rbt)");
+                println!("    help       - Shows available commands.");
+                println!("    insert VAL - Inserts \"VAL\" into the tree.");
+                println!("    delete VAL - Deletes \"VAL\" from the tree.");
+                println!("    count      - Returns the number of leaves in the tree.");
+                println!("    height     - Returns the height of the tree.");
+                println!("    print      - Prints out the node information in order.");
+                println!("    isempty    - Returns 0 if the tree is empty, otherwise 1.");
                 println!();
+            },
+            "insert" => {
+                match args.peekable().peek() {
+                    Some(val) => {
+                        rbtree.insert(FromStr::from_str(val).unwrap());
+                    },
+                    None => {
+                        println!("Must add a value after \"insert\"");
+                    }
+                }
+            },
+            "delete" => {
+                match args.peekable().peek() {
+                    Some(val) => {
+                        rbtree.delete(FromStr::from_str(val).unwrap());
+                    },
+                    None => {
+                        println!("Must add a value after \"delete\"");
+                    }
+                }
+            },
+            "count" => {
+                println!("{:?}", rbtree.count_leaf_nodes());
+            },
+            "height" => {
+                println!("{:?}", rbtree.get_height());
+            },
+            "print" => {
+                println!("{:?}", rbtree.print_in_order_traversal());
+            },
+            "isempty" => {
+                println!("{:?}", rbtree.is_empty());
             },
             command => {
                 println!("\nCommand {:?} not recognized. Type help for available commands.\n", command);
@@ -287,6 +327,7 @@ fn test_rbt() {
     }
 }
 fn test_avl() {
+    let mut avltree = AVLTree::<u32>::new();
     loop {
         // print the users cursor
         print!("Testing AVL > ");
@@ -304,9 +345,49 @@ fn test_avl() {
             "exit" => return,
             "help" => {
                 println!("\nAvaliable commands:\n");
-                println!("    exit - Exit the program.");
-                println!("    help - Show available commands.");
+                println!("    exit       - Exit the program. (will delete the current avl tree)");
+                println!("    help       - Shows available commands.");
+                println!("    insert VAL - Inserts \"VAL\" into the tree.");
+                println!("    delete VAL - Deletes \"VAL\" from the tree.");
+                println!("    count      - Returns the number of leaves in the tree.");
+                println!("    height     - Returns the height of the tree.");
+                println!("    print      - Prints out the node information in order.");
+                println!("    isempty    - Returns 0 if the tree is empty, otherwise 1.");
                 println!();
+            },
+            "insert" => {
+                match args.peekable().peek() {
+                    Some(val) => {
+                        avltree.insert(FromStr::from_str(val).unwrap());
+                    },
+                    None => {
+                        println!("Must add a value after \"insert\"");
+                    }
+                }
+            },
+            "delete" => {
+                match args.peekable().peek() {
+                    Some(val) => {
+                        avltree.delete(FromStr::from_str(val).unwrap());
+                    },
+                    None => {
+                        println!("Must add a value after \"delete\"");
+                    }
+                }
+            },
+            "count" => {
+                println!("This function is not yet implemented.");
+                // println!("{:?}", avltree.count_leaf_nodes());
+            },
+            "height" => {
+                println!("{:?}", avltree.get_height());
+            },
+            "print" => {
+                println!("This function is not yet implemented.");
+                // println!("{:?}", avltree.print_in_order_traversal());
+            },
+            "isempty" => {
+                println!("{:?}", avltree.is_empty());
             },
             command => {
                 println!("\nCommand {:?} not recognized. Type help for available commands.\n", command);
