@@ -255,7 +255,6 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
 
     // Rebalance to ensure AVL tree properties are maintained
     pub fn rebalance(&mut self, mut node: Pointer){
-        //println!("BALANCE {:?}", self.get_balance_factor(node));
         while(!node.is_null()){
             if self.get_balance_factor(node) < -1{
                 // Left heavy so rotate right
@@ -295,13 +294,13 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
         }
     }
 
+    // Delete node with value val
     pub fn delete(&mut self, val: T) /*-> T*/{
         let remove = self.get_node(val);
         let mut parent = self[remove].parent;
         // Three cases no children, 1 children, 2 children
         if self[remove].left.is_null() && self[remove].right.is_null(){
             // No children just delete node
-            println!("DELETE NO CHILDREN");
             if self[self[remove].parent].left == remove{
                 self[parent].left = Pointer::null();
             }
@@ -311,10 +310,40 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
         }
         else if !self[remove].left.is_null() && !self[remove].right.is_null(){
             // Two childre need to find replacement node
-            println!("DELETE TWO CHILDREN");
+            let mut replace = self.min_of_right(remove);
+            if self[parent].left == remove{
+                let lefttree = self[remove].left;
+                self[parent].left = replace;
+                self[replace].parent = parent;
+                self[replace].left = self[remove].left;
+                self[lefttree].parent = replace;
+                if self[remove].right == replace{
+                    self[replace].right = Pointer::null();
+                }
+                else{
+                    let righttree = self[remove].right;
+                    self[replace].right = self[remove].right;
+                    self[righttree].parent = replace;
+                }
+            }
+            else{
+                let lefttree = self[remove].left;
+                self[parent].right = replace;
+                self[replace].parent = parent;
+                self[replace].left = self[remove].left;
+                self[lefttree].parent = replace;
+                if self[remove].right == replace{
+                    self[replace].right = Pointer::null();
+                }
+                else{
+                    let righttree = self[remove].right;
+                    self[replace].right = self[remove].right;
+                    self[righttree].parent = replace;
+                }
+            }
         }
         else{
-            println!("DELETE ONE CHILD");
+            // One child, replace remove with child
             if !self[remove].left.is_null(){
                 if self[self[remove].parent].left == remove{
                     let mut left = self[remove].left;
@@ -339,10 +368,41 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
                     self[right].parent = parent;
                 }
             }
-        }
-        
+        }        
         self.rebalance(parent);
-        //self.slab.remove(remove.0).value;
+    }
+
+    // Return number of leaf nodes is tree
+    pub fn count_leaf_nodes(&self) -> u32{
+        return self.count_leaf_nodes_from_node(self.root);
+    }
+    pub fn count_leaf_nodes_from_node(&self, node: Pointer) -> u32{
+        if node.is_null(){
+            return 0;
+        }
+        else{
+            let left = self.get_height_from_node(self[node].left);
+            let right = self.get_height_from_node(self[node].right);
+            if left == right && left == 0{
+                return 1;
+            }
+            return left + right;
+        }
+    }
+
+    // Print tree from left to right
+    pub fn print_in_order_traversal(&self){
+        println!("{:?}", self);
+    }
+
+    // Find smallest value in right tree of head, used for delete
+    pub fn min_of_right(&self, head: Pointer)-> Pointer{
+        let mut current = self[head].right;
+
+        while(!self[current].left.is_null()){
+            current = self[current].left;
+        }
+        return current;
     }
 
 }
