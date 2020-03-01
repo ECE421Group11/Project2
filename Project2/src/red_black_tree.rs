@@ -8,7 +8,7 @@ use std::cmp;
 extern crate slab;
 
 // prints the red black tree
-impl<T: fmt::Debug + Copy + fmt::Debug> fmt::Debug for RedBlackTree<T> {
+impl<T: fmt::Debug + Copy> fmt::Debug for RedBlackTree<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 
         // recursivley print the tree in an ordered fashion
