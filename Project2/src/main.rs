@@ -230,6 +230,17 @@ fn avl_delete(){
 fn main() {
     env::set_var("RUST_BACKTRACE", "1");
 
+    let mut vec = Vec::new();
+    vec.push(10000);
+    vec.push(40000);
+    vec.push(70000);
+    vec.push(100000);
+    vec.push(130000);
+    for tree_size in vec{
+        println!("{:?}", tree_size);
+    }
+    
+
     let mut intro = 1;
 
     // used to test the library
