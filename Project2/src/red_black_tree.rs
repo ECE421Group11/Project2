@@ -109,7 +109,7 @@ pub struct RedBlackTree<T> {
     pub root: Pointer,
 }
 
-impl<T: PartialOrd + Copy> RedBlackTree<T> {
+impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
     // Returns a new doubly linked list.
     pub fn new() -> Self {
         RedBlackTree {
@@ -281,6 +281,7 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
             self.right_rotate(parent);
             n = self[n].right;
         }
+
         self.insert_case4_part2(n);
     }
 
@@ -290,7 +291,7 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
 
         let parent_left = self[parent].left;
 
-        if self[node].value == self[parent_left].value{
+        if !parent_left.is_null() && self[node].value == self[parent_left].value{
             self.right_rotate(grandparent);
         }
         else{
@@ -299,6 +300,17 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
 
         self[parent].color = NodeColor::Black;
         self[grandparent].color = NodeColor::Red;
+    }
+
+    pub fn delete(&mut self, val: T){
+        let mut newTree = RedBlackTree::new();
+        for i in 0..self.slab.len(){
+            if self.slab[i].value != val{
+                newTree.insert(self.slab[i].value);
+            }
+        }
+        self.slab = newTree.slab;
+        self.root = newTree.root;
     }
 
     pub fn insert(&mut self, val: T){
