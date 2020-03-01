@@ -11,7 +11,7 @@ use std::process::Command;
 use std::path::Path;
 use std::env;
 
-# [test]
+#[test]
 fn test_rb_insert(){
     let mut rbtree = RedBlackTree::<u32>::new();
 
@@ -74,7 +74,7 @@ fn test_rb_insert(){
     assert_eq!(rbtree[node90].parent, node75);
 }
 
-# [test]
+#[test]
 fn test_rb_delete(){
     let mut rbtree = RedBlackTree::<u32>::new();
 
@@ -133,7 +133,7 @@ fn test_rb_delete(){
     assert_eq!(rbtree[node90].parent, node75);
 }
 
-# [test]
+#[test]
 fn test_rb_get_node(){
     let mut rbtree = RedBlackTree::<u32>::new();
 
@@ -151,7 +151,7 @@ fn test_rb_get_node(){
 
 }
 
-# [test]
+#[test]
 fn test_rb_empty(){
     let mut rbtree = RedBlackTree::<u32>::new();
     assert_eq!(rbtree.is_empty(), true);
@@ -174,6 +174,7 @@ fn test_rb_height(){
 }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 #[test]
 fn simple_avl_insert(){
     let mut avltree = AVLTree::<u32>::new();
@@ -183,6 +184,9 @@ fn simple_avl_insert(){
     assert_eq!(avltree[avltree.root].value, 2);
 =======
 # [test]
+=======
+#[test]
+>>>>>>> 256595002533caae6087c11aae85143fa6367b76
 fn test_rb_count_leafs(){
     let mut rbtree = RedBlackTree::<u32>::new();
     assert_eq!(rbtree.count_leaf_nodes(), 0);
@@ -255,8 +259,6 @@ fn test_avl() {}
 =======
     env::set_var("RUST_BACKTRACE", "1");
     let mut rbtree = RedBlackTree::<u32>::new();
-    
-    println!("{:?}", rbtree.count_leaf_nodes());
 
     rbtree.insert(50);
     rbtree.insert(25);
@@ -266,11 +268,11 @@ fn test_avl() {}
     rbtree.insert(60);
     rbtree.insert(90);
 
-    println!("{:?}", rbtree);
-    println!("{:?}", rbtree.count_leaf_nodes());
+    rbtree.print_in_order_traversal();
 
     rbtree.delete(50);
-    println!("{:?}", rbtree);
+    rbtree.print_in_order_traversal();
+
 
 }
 
