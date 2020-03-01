@@ -1,3 +1,5 @@
+// Our code base is adapted from: https://play.rust-lang.org/?gist=d65d605a48d38648737ad2ae38f46434&version=stable
+
 use slab::Slab;
 use std::fmt;
 use std::ops::{Index, IndexMut};
