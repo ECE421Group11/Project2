@@ -18,7 +18,7 @@ impl<T: fmt::Debug + Copy + fmt::Debug> fmt::Debug for AVLTree<T> {
             }
         }
 
-        write!(f, "Tree(")?;
+        write!(f, "In order traversal: (\n")?;
         write_recursive(&self, self.root, f);
         write!(f, ")")?;
         

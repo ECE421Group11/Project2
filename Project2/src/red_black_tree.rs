@@ -7,9 +7,11 @@ use std::ops::{Index, IndexMut};
 use std::cmp;
 extern crate slab;
 
+// prints the red black tree
 impl<T: fmt::Debug + Copy + fmt::Debug> fmt::Debug for RedBlackTree<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 
+        // recursivley print the tree in an ordered fashion
         fn write_recursive<T: fmt::Debug + Copy>(rbTree: &RedBlackTree<T>, node: Pointer, f: &mut fmt::Formatter){
             if node.is_null(){
                 write!(f, "").unwrap();
@@ -58,9 +60,11 @@ impl<T: fmt::Debug + Copy + fmt::Debug> fmt::Debug for RedBlackTree<T> {
     }
 }
 
+// a respresentation of a pointer to a node
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub struct Pointer(usize);
 
+// define null for pointers
 impl Pointer {
     #[inline]
     pub fn null() -> Pointer {
@@ -89,12 +93,14 @@ impl<T> IndexMut<Pointer> for RedBlackTree<T> {
     }
 }
 
+// nodes are either red or black
 #[derive(Clone, Debug, PartialEq)]
 pub enum NodeColor {
     Red,
     Black,
 }
 
+// defining a node
 #[derive(Debug)]
 pub struct Node<T> {
     pub value: T,
@@ -104,28 +110,34 @@ pub struct Node<T> {
     pub color: NodeColor,
 }
 
+// defining the red black tree structure
 pub struct RedBlackTree<T> {
     pub slab: Slab<Node<T>>,
     pub root: Pointer,
 }
 
+// implementation for the red black tree
 impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
-    // Returns a new doubly linked list.
+    
+    // returnes a new red black tree
     pub fn new() -> Self {
-        RedBlackTree {
+        return RedBlackTree {
             slab: Slab::new(),
             root: Pointer::null(),
         }
     }
 
+    // checks to see if a red black tree is empty
     pub fn is_empty(&self) -> bool{
         return self.root.is_null();
     }
     
+    // prints the tree in order
     pub fn print_in_order_traversal(&self){
         println!("{:?}", self);
     }
 
+    // gets a pointer to a node from the tree
     pub fn get_node(&self, val: T) -> Pointer{
         let node = self.get_node_from_node(self.root, val);
 
@@ -135,6 +147,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
         return node;
     }
 
+    // recursivley gets a node from below a specified node
     pub fn get_node_from_node(&self, node: Pointer, val:T) -> Pointer{
         if node.is_null(){
             return Pointer::null();
@@ -152,11 +165,12 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
         }
     }
     
+    // get the height of the tree
     pub fn get_height(&self) -> u32{
         return self.get_height_from_node(self.root);
     }
 
-
+    // recursivley gets the height below a node
     pub fn get_height_from_node(&self, node: Pointer) -> u32{
         if node.is_null(){
             return 0;
@@ -168,10 +182,12 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
         }
     }
 
+    // count the number of leaf nodes in the tree
     pub fn count_leaf_nodes(&self) -> u32{
         return self.count_leaf_nodes_from_node(self.root);
     }
 
+    // count the number of leaf nodes below a node
     pub fn count_leaf_nodes_from_node(&self, node: Pointer) -> u32{
         if node.is_null(){
             return 0;
@@ -186,6 +202,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
         }
     }
 
+    // get the uncle of a node
     pub fn get_uncle(&self, node: Pointer) -> Pointer{
         let parent = self[node].parent;
         if parent.is_null(){
@@ -217,6 +234,19 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
 
     }
 
+    // remove ownership of a node from the tree, effectivley deleting the node
+    pub fn transfer_and_remove_ownership(&mut self, val: T){
+        let mut newTree = RedBlackTree::new();
+        for i in 0..self.slab.len(){
+            if self.slab[i].value != val{
+                newTree.insert(self.slab[i].value);
+            }
+        }
+        self.slab = newTree.slab;
+        self.root = newTree.root;
+    }
+
+    // fix an insert
     pub fn insert_fixup(&mut self, node: Pointer){
         let parent = self[node].parent;
         if self[node].parent.is_null(){
@@ -240,14 +270,17 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
 
     }
 
+    // case 1 of fixing insert
     pub fn insert_case1(&mut self, node: Pointer){
         self[node].color = NodeColor::Black;
     }
 
+    // case 2 of fixing insert
     pub fn insert_case2(&mut self, _node: Pointer){
         return
     }
 
+    // case 3 of fixing insert
     pub fn insert_case3(&mut self, node: Pointer){
         let parent = self[node].parent;
         let uncle = self.get_uncle(node);
@@ -260,17 +293,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
         self.insert_fixup(grandparent);
     }
 
-    pub fn transfer_and_remove_ownership(&mut self, val: T){
-        let mut newTree = RedBlackTree::new();
-        for i in 0..self.slab.len(){
-            if self.slab[i].value != val{
-                newTree.insert(self.slab[i].value);
-            }
-        }
-        self.slab = newTree.slab;
-        self.root = newTree.root;
-    }
-
+    // case 4 of fixing insert
     pub fn insert_case4(&mut self, node: Pointer){
 
         let parent = self[node].parent;
@@ -296,6 +319,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
         self.insert_case4_part2(n);
     }
 
+    // case 4 part 2 of fixing insert
     pub fn insert_case4_part2(&mut self, node: Pointer){
         let parent = self[node].parent;
         let grandparent = self[parent].parent;
@@ -313,12 +337,14 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
         self[grandparent].color = NodeColor::Red;
     }
 
+    // delete a node from the tree
     pub fn delete(&mut self, val: T){
         if !self.get_node(val).is_null(){
             self.transfer_and_remove_ownership(val);
         }
     }
 
+    // insert a node into the tree
     pub fn insert(&mut self, val: T){
         if self.root.is_null(){
             self.root = Pointer(self.slab.insert(Node {
@@ -337,6 +363,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
         }
     }
 
+    // insert a node below the specified node
     pub fn insert_below_node(&mut self, val: T, node: Pointer) -> Pointer{
         let nodeValue = self[node].value;
         let left = self[node].left;
@@ -378,6 +405,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
         }
     }
 
+    // rotate the node left
     pub fn left_rotate(&mut self, current: Pointer){
         let right = self[current].right;
 
@@ -421,6 +449,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
         }
     }
 
+    // rotate the node right
     pub fn right_rotate(&mut self, current: Pointer){
         let left = self[current].left;
 
