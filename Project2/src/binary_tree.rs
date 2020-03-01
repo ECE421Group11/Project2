@@ -59,7 +59,6 @@ pub struct Node<T> {
     pub value: T,
     right: Pointer,
     left: Pointer,
-    parent: Pointer,
 }
 
 pub struct BinaryTree<T> {
@@ -105,7 +104,6 @@ impl<T: PartialOrd + Copy + fmt::Debug> BinaryTree<T> {
                 value: val,
                 right: Pointer::null(),
                 left: Pointer::null(),
-                parent: Pointer::null(),
             }));
         }
         else{
@@ -128,7 +126,6 @@ impl<T: PartialOrd + Copy + fmt::Debug> BinaryTree<T> {
                     value: val,
                     right: Pointer::null(),
                     left: Pointer::null(),
-                    parent: node,
                 }));
             }
             else{
@@ -141,7 +138,6 @@ impl<T: PartialOrd + Copy + fmt::Debug> BinaryTree<T> {
                     value: val,
                     right: Pointer::null(),
                     left: Pointer::null(),
-                    parent: node,
                 }));
             }
             else{
