@@ -253,7 +253,7 @@ fn main() {
                 println!();
             },
             command => {
-                println!("\nCommand {:?} not recognized. Type help for available commands.\n", command);
+                println!("Command {:?} not recognized. Type help for available commands.", command);
             }
         }
     }
@@ -321,7 +321,7 @@ fn test_rbt() {
                 println!("{:?}", rbtree.is_empty());
             },
             command => {
-                println!("\nCommand {:?} not recognized. Type help for available commands.\n", command);
+                println!("Command {:?} not recognized. Type help for available commands.", command);
             }
         }
     }
@@ -390,7 +390,7 @@ fn test_avl() {
                 println!("{:?}", avltree.is_empty());
             },
             command => {
-                println!("\nCommand {:?} not recognized. Type help for available commands.\n", command);
+                println!("Command {:?} not recognized. Type help for available commands.", command);
             }
         }
     }
