@@ -6,12 +6,9 @@ use Project2::red_black_tree::Pointer;
 use std::env;
 
 use Project2::avl_tree::AVLTree;
-<<<<<<< HEAD
-=======
 use std::io::{stdin, stdout, Write};
 use std::process::Command;
 use std::path::Path;
->>>>>>> 5b74904bed9627a0c0aedc462cc04961af2fffc8
 use std::env;
 
 #[test]
