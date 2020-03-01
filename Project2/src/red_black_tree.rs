@@ -260,6 +260,17 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
         self.insert_fixup(grandparent);
     }
 
+    pub fn transfer_and_remove_ownership(&mut self, val: T){
+        let mut newTree = RedBlackTree::new();
+        for i in 0..self.slab.len(){
+            if self.slab[i].value != val{
+                newTree.insert(self.slab[i].value);
+            }
+        }
+        self.slab = newTree.slab;
+        self.root = newTree.root;
+    }
+
     pub fn insert_case4(&mut self, node: Pointer){
 
         let parent = self[node].parent;
@@ -303,14 +314,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
     }
 
     pub fn delete(&mut self, val: T){
-        let mut newTree = RedBlackTree::new();
-        for i in 0..self.slab.len(){
-            if self.slab[i].value != val{
-                newTree.insert(self.slab[i].value);
-            }
-        }
-        self.slab = newTree.slab;
-        self.root = newTree.root;
+        self.transfer_and_remove_ownership(val);
     }
 
     pub fn insert(&mut self, val: T){
