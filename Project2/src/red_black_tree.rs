@@ -399,9 +399,3 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
     }
 
 }
-
-
-
-fn main() {
-    
-}
