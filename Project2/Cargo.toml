@@ -11,7 +11,6 @@ readme = "https://github.com/ECE421Group11/Project2"
 keywords = ["redblacktree", "avltree", "tree", "rbtree"]
 categories = ["data-structures", "algorithms"]
 license = "https://github.com/ECE421Group11/Project2"
-license-file = "https://github.com/ECE421Group11/Project2"
 
 [dependencies]
 slab = "0.4.2"
