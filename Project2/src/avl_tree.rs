@@ -1,23 +1,19 @@
 use slab::Slab;
 use std::fmt;
 use std::ops::{Index, IndexMut};
-use std::cell::RefCell;
-use std::rc::Rc;
 use std::cmp;
 extern crate slab;
 
 impl<T: fmt::Debug + Copy + fmt::Debug> fmt::Debug for AVLTree<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut first = true;
-        let mut n = self.root;
 
         fn write_recursive<T: fmt::Debug + Copy>(avlTree: &AVLTree<T>, node: Pointer, f: &mut fmt::Formatter){
             if node.is_null(){
-                write!(f, "");
+                write!(f, "").unwrap();
             }
             else{
                 write_recursive(avlTree, avlTree[node].left, f);
-                write!(f, "({:?}), ", avlTree[node].value);
+                write!(f, "({:?}), ", avlTree[node].value).unwrap();
                 write_recursive(avlTree, avlTree[node].right, f);
             }
         }
@@ -97,7 +93,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
 
     // Returns balance factor used to determine balance of AVL tree. Neg number = left heavy, pos number = right heavy
     pub fn get_balance_factor(&self, node: Pointer) -> i32{
-        return (self.get_height_from_node(self[node].right) as i32 - self.get_height_from_node(self[node].left) as i32);
+        return self.get_height_from_node(self[node].right) as i32 - self.get_height_from_node(self[node].left) as i32;
     }
 
     // Returns height below node passed as argument
@@ -256,7 +252,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
 
     // Rebalance to ensure AVL tree properties are maintained
     pub fn rebalance(&mut self, mut node: Pointer){
-        while(!node.is_null()){
+        while !node.is_null(){
             if self.get_balance_factor(node) < -1{
                 // Left heavy so rotate right
                 self.right_rotate(node);
@@ -299,8 +295,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
     // Delete node with value val
     pub fn delete(&mut self, val: T) /*-> T*/{
         let remove = self.get_node(val);
-        if remove.is_null(){return;}
-        let mut parent = self[remove].parent;
+        let parent = self[remove].parent;
         // Three cases no children, 1 children, 2 children
         if self[remove].left.is_null() && self[remove].right.is_null(){
             // No children just delete node
@@ -313,7 +308,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
         }
         else if !self[remove].left.is_null() && !self[remove].right.is_null(){
             // Two childre need to find replacement node
-            let mut replace = self.min_of_right(remove);
+            let replace = self.min_of_right(remove);
             if self[parent].left == remove{
                 let lefttree = self[remove].left;
                 self[parent].left = replace;
@@ -349,24 +344,24 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
             // One child, replace remove with child
             if !self[remove].left.is_null(){
                 if self[self[remove].parent].left == remove{
-                    let mut left = self[remove].left;
+                    let left = self[remove].left;
                     self[parent].left = left;
                     self[left].parent = parent;
                 }
                 else{
-                    let mut left = self[remove].left;
+                    let left = self[remove].left;
                     self[parent].right = left;
                     self[left].parent = parent;
                 }
             }
             else{
                 if self[self[remove].parent].left == remove{
-                    let mut right = self[remove].right;
+                    let right = self[remove].right;
                     self[parent].left = right;
                     self[right].parent = parent;
                 }
                 else{
-                    let mut right = self[remove].right;
+                    let right = self[remove].right;
                     self[parent].right = right;
                     self[right].parent = parent;
                 }
@@ -402,7 +397,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
     pub fn min_of_right(&self, head: Pointer)-> Pointer{
         let mut current = self[head].right;
 
-        while(!self[current].left.is_null()){
+        while !self[current].left.is_null(){
             current = self[current].left;
         }
         return current;

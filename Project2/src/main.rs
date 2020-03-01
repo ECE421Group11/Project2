@@ -1,15 +1,26 @@
 #![allow(non_snake_case)]
 //extern crate red_black_tree;
+#[allow(unused_imports)]
 use Project2::red_black_tree::RedBlackTree;
-use Project2::red_black_tree::NodeColor;
-use Project2::red_black_tree::Pointer;
-use std::env;
 
+#[allow(unused_imports)]
+use Project2::red_black_tree::NodeColor;
+
+#[allow(unused_imports)]
+use Project2::red_black_tree::Pointer;
+use Project2::command_line_interface::CommandLineInterface;
+
+#[allow(unused_imports)]
 use Project2::avl_tree::AVLTree;
+
+#[allow(unused_imports)]
 use std::io::{stdin, stdout, Write};
-use std::process::Command;
-use std::iter::Peekable;
+
+#[allow(unused_imports)]
 use std::str::FromStr;
+
+#[allow(unused_imports)]
+use std::env;
 
 #[test]
 fn test_rb_insert(){
@@ -184,7 +195,7 @@ fn simple_avl_insert(){
 
 # [test]
 fn test_rb_count_leafs(){
-    let mut rbtree = RedBlackTree::<u32>::new();
+    let rbtree = RedBlackTree::<u32>::new();
     assert_eq!(rbtree.count_leaf_nodes(), 0);
 
     let mut avltree = AVLTree::<u32>::new();
@@ -228,18 +239,7 @@ fn avl_delete(){
 
 
 fn main() {
-    env::set_var("RUST_BACKTRACE", "1");
-
-    let mut vec = Vec::new();
-    vec.push(10000);
-    vec.push(40000);
-    vec.push(70000);
-    vec.push(100000);
-    vec.push(130000);
-    for tree_size in vec{
-        println!("{:?}", tree_size);
-    }
-    
+    env::set_var("RUST_BACKTRACE", "1");    
 
     let mut intro = 1;
 
@@ -420,4 +420,6 @@ fn test_avl() {
             }
         }
     }
+    let command_line_interface = CommandLineInterface{};
+    command_line_interface.run();
 }

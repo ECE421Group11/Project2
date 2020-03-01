@@ -130,7 +130,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
         let node = self.get_node_from_node(self.root, val);
 
         if node.is_null(){
-            panic!("Node does not exist!")
+            println!("Node does not exist!")
         }
         return node;
     }
@@ -314,7 +314,9 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
     }
 
     pub fn delete(&mut self, val: T){
-        self.transfer_and_remove_ownership(val);
+        if !self.get_node(val).is_null(){
+            self.transfer_and_remove_ownership(val);
+        }
     }
 
     pub fn insert(&mut self, val: T){
@@ -329,7 +331,9 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
         }
         else{
             let new_node = self.insert_below_node(val, self.root);
-            self.insert_fixup(new_node);
+            if !new_node.is_null(){
+                self.insert_fixup(new_node);
+            }
         }
     }
 
@@ -339,7 +343,8 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
         let right = self[node].right;
 
         if val == nodeValue{
-            panic!("Duplicate node values");
+            println!("Duplicate node values");
+            return Pointer::null();
         }
         else if val > nodeValue{
             if right.is_null(){
