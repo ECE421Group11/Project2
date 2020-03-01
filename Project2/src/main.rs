@@ -393,15 +393,13 @@ fn test_avl() {
                 }
             },
             "count" => {
-                println!("This function is not yet implemented.");
-                // println!("{:?}", avltree.count_leaf_nodes());
+                println!("{:?}", avltree.count_leaf_nodes());
             },
             "height" => {
                 println!("{:?}", avltree.get_height());
             },
             "print" => {
-                println!("This function is not yet implemented.");
-                // println!("{:?}", avltree.print_in_order_traversal());
+                println!("{:?}", avltree.print_in_order_traversal());
             },
             "isempty" => {
                 println!("{:?}", avltree.is_empty());

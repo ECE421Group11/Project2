@@ -125,7 +125,6 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
         else{
             self.insert_below_node(val, self.root);
         }
-        //self.rebalance();
     }
 
     pub fn insert_below_node(&mut self, val: T, node: Pointer){
@@ -134,7 +133,8 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
         let right = self[node].right;
 
         if val == nodeValue{
-            panic!("Duplicate node values");
+            println!("Duplicate node values");
+            return;
         }
         else if val > nodeValue{
             if right.is_null(){
@@ -144,6 +144,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
                     left: Pointer::null(),
                     parent: node,
                 }));
+                // Fix tree
                 self.rebalance(node);
             }
             else{
@@ -158,7 +159,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
                     left: Pointer::null(),
                     parent: node,
                 }));
-                
+                // Fix tree
                 self.rebalance(node);
             }
             else{
@@ -272,7 +273,8 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
         let node = self.get_node_from_node(self.root, val);
 
         if node.is_null(){
-            panic!("Node does not exist!")
+            println!("Node does not exist!");
+            return Pointer::null();
         }
         return node;
     }
@@ -297,6 +299,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
     // Delete node with value val
     pub fn delete(&mut self, val: T) /*-> T*/{
         let remove = self.get_node(val);
+        if remove.is_null(){return;}
         let mut parent = self[remove].parent;
         // Three cases no children, 1 children, 2 children
         if self[remove].left.is_null() && self[remove].right.is_null(){
