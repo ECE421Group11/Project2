@@ -109,7 +109,7 @@ pub struct RedBlackTree<T> {
     pub root: Pointer,
 }
 
-impl<T: PartialOrd + Copy> RedBlackTree<T> {
+impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
     // Returns a new doubly linked list.
     pub fn new() -> Self {
         RedBlackTree {
@@ -118,17 +118,40 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
         }
     }
 
-    pub fn len(&self) -> usize{
-        return self.slab.len();
-    }
-
     pub fn is_empty(&self) -> bool{
-        return self.len() == 0;
+        return self.root.is_null();
+    }
+    
+    pub fn get_node(&self, val: T) -> Pointer{
+        let node = self.get_node_from_node(self.root, val);
+
+        if node.is_null(){
+            panic!("Node does not exist!")
+        }
+        return node;
     }
 
+    pub fn get_node_from_node(&self, node: Pointer, val:T) -> Pointer{
+        if node.is_null(){
+            return Pointer::null();
+        }
+        else{
+            if self[node].value == val{
+                return node;
+            }
+            else if val > self[node].value{
+                return self.get_node_from_node(self[node].right, val);
+            }
+            else{
+                return self.get_node_from_node(self[node].left, val);
+            }
+        }
+    }
+    
     pub fn get_height(&self) -> u32{
         return self.get_height_from_node(self.root);
     }
+
 
     pub fn get_height_from_node(&self, node: Pointer) -> u32{
         if node.is_null(){
@@ -138,6 +161,24 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
             let left = self.get_height_from_node(self[node].left);
             let right = self.get_height_from_node(self[node].right);
             return cmp::max(left, right) + 1;
+        }
+    }
+
+    pub fn count_leaf_nodes(&self) -> u32{
+        return self.count_leaf_nodes_from_node(self.root);
+    }
+
+    pub fn count_leaf_nodes_from_node(&self, node: Pointer) -> u32{
+        if node.is_null(){
+            return 0;
+        }
+        else{
+            let left = self.get_height_from_node(self[node].left);
+            let right = self.get_height_from_node(self[node].right);
+            if left == right && left == 0{
+                return 1;
+            }
+            return left + right;
         }
     }
 
@@ -236,6 +277,7 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
             self.right_rotate(parent);
             n = self[n].right;
         }
+
         self.insert_case4_part2(n);
     }
 
@@ -245,7 +287,7 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
 
         let parent_left = self[parent].left;
 
-        if self[node].value == self[parent_left].value{
+        if !parent_left.is_null() && self[node].value == self[parent_left].value{
             self.right_rotate(grandparent);
         }
         else{
@@ -254,6 +296,17 @@ impl<T: PartialOrd + Copy> RedBlackTree<T> {
 
         self[parent].color = NodeColor::Black;
         self[grandparent].color = NodeColor::Red;
+    }
+
+    pub fn delete(&mut self, val: T){
+        let mut newTree = RedBlackTree::new();
+        for i in 0..self.slab.len(){
+            if self.slab[i].value != val{
+                newTree.insert(self.slab[i].value);
+            }
+        }
+        self.slab = newTree.slab;
+        self.root = newTree.root;
     }
 
     pub fn insert(&mut self, val: T){
