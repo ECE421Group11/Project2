@@ -1,0 +1,11 @@
+d:\Documents\School\Fifth-Year\ECE 421\projects\Project2\Project2\target\rls\debug\deps\regex_automata-2c5ebb9417f9aaf4.rmeta: C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\lib.rs C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\classes.rs C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\dense.rs C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\dfa.rs C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\regex.rs C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\sparse.rs C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\state_id.rs
+
+d:\Documents\School\Fifth-Year\ECE 421\projects\Project2\Project2\target\rls\debug\deps\regex_automata-2c5ebb9417f9aaf4.d: C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\lib.rs C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\classes.rs C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\dense.rs C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\dfa.rs C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\regex.rs C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\sparse.rs C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\state_id.rs
+
+C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\lib.rs:
+C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\classes.rs:
+C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\dense.rs:
+C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\dfa.rs:
+C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\regex.rs:
+C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\sparse.rs:
+C:\Users\tymoo\.cargo\registry\src\github.com-1ecc6299db9ec823\regex-automata-0.1.8\src\state_id.rs:
