@@ -258,5 +258,59 @@ fn main() {
     }
 }
 
-fn test_rbt() {}
-fn test_avl() {}
+fn test_rbt() {
+    loop {
+        // print the users cursor
+        print!("Testing RBT > ");
+        stdout().flush();
+
+        // get the users input
+        let mut input = String::new();
+        stdin().read_line(&mut input).unwrap();
+        let mut parts = input.trim().split_whitespace();
+        let command = parts.next().unwrap();
+        let args = parts;
+
+        // match the command to an action
+        match command {
+            "exit" => return,
+            "help" => {
+                println!("\nAvaliable commands:\n");
+                println!("    exit - Exit the program.");
+                println!("    help - Show available commands.");
+                println!();
+            },
+            command => {
+                println!("\nCommand {:?} not recognized. Type help for available commands.\n", command);
+            }
+        }
+    }
+}
+fn test_avl() {
+    loop {
+        // print the users cursor
+        print!("Testing AVL > ");
+        stdout().flush();
+
+        // get the users input
+        let mut input = String::new();
+        stdin().read_line(&mut input).unwrap();
+        let mut parts = input.trim().split_whitespace();
+        let command = parts.next().unwrap();
+        let args = parts;
+
+        // match the command to an action
+        match command {
+            "exit" => return,
+            "help" => {
+                println!("\nAvaliable commands:\n");
+                println!("    exit - Exit the program.");
+                println!("    help - Show available commands.");
+                println!();
+            },
+            command => {
+                println!("\nCommand {:?} not recognized. Type help for available commands.\n", command);
+            }
+        }
+    }
+}
