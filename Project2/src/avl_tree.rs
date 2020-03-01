@@ -71,7 +71,7 @@ pub struct AVLTree<T> {
     pub root: Pointer,
 }
 
-impl<T: PartialOrd + Copy> AVLTree<T> {
+impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
     // Returns a new doubly linked list.
     pub fn new() -> Self {
         AVLTree {
@@ -81,13 +81,13 @@ impl<T: PartialOrd + Copy> AVLTree<T> {
     }
 
     // Returns total number of nodes in tree
-    pub fn len(&self) -> usize{
+    /*pub fn len(&self) -> usize{
         return self.slab.len();
-    }
+    }*/
 
     // Returns true if tree is empty, false otherwise
     pub fn is_empty(&self) -> bool{
-        return self.len() == 0;
+        return self.root.is_null();
     }
 
     // Returns height of tree
@@ -255,8 +255,8 @@ impl<T: PartialOrd + Copy> AVLTree<T> {
 
     // Rebalance to ensure AVL tree properties are maintained
     pub fn rebalance(&mut self, mut node: Pointer){
+        //println!("BALANCE {:?}", self.get_balance_factor(node));
         while(!node.is_null()){
-            println!("Balance Facor {:?}", self.get_balance_factor(node));
             if self.get_balance_factor(node) < -1{
                 // Left heavy so rotate right
                 self.right_rotate(node);
@@ -269,8 +269,80 @@ impl<T: PartialOrd + Copy> AVLTree<T> {
         }
     }
 
-    pub fn delete(&mut self, val: T){
+    pub fn get_node(&self, val: T) -> Pointer{
+        let node = self.get_node_from_node(self.root, val);
+
+        if node.is_null(){
+            panic!("Node does not exist!")
+        }
+        return node;
+    }
+
+    pub fn get_node_from_node(&self, node: Pointer, val:T) -> Pointer{
+        if node.is_null(){
+            return Pointer::null();
+        }
+        else{
+            if self[node].value == val{
+                return node;
+            }
+            else if val > self[node].value{
+                return self.get_node_from_node(self[node].right, val);
+            }
+            else{
+                return self.get_node_from_node(self[node].left, val);
+            }
+        }
+    }
+
+    pub fn delete(&mut self, val: T) /*-> T*/{
+        let remove = self.get_node(val);
+        let mut parent = self[remove].parent;
+        // Three cases no children, 1 children, 2 children
+        if self[remove].left.is_null() && self[remove].right.is_null(){
+            // No children just delete node
+            println!("DELETE NO CHILDREN");
+            if self[self[remove].parent].left == remove{
+                self[parent].left = Pointer::null();
+            }
+            else{
+                self[parent].right = Pointer::null();
+            }
+        }
+        else if !self[remove].left.is_null() && !self[remove].right.is_null(){
+            // Two childre need to find replacement node
+            println!("DELETE TWO CHILDREN");
+        }
+        else{
+            println!("DELETE ONE CHILD");
+            if !self[remove].left.is_null(){
+                if self[self[remove].parent].left == remove{
+                    let mut left = self[remove].left;
+                    self[parent].left = left;
+                    self[left].parent = parent;
+                }
+                else{
+                    let mut left = self[remove].left;
+                    self[parent].right = left;
+                    self[left].parent = parent;
+                }
+            }
+            else{
+                if self[self[remove].parent].left == remove{
+                    let mut right = self[remove].right;
+                    self[parent].left = right;
+                    self[right].parent = parent;
+                }
+                else{
+                    let mut right = self[remove].right;
+                    self[parent].right = right;
+                    self[right].parent = parent;
+                }
+            }
+        }
         
+        self.rebalance(parent);
+        //self.slab.remove(remove.0).value;
     }
 
 }
