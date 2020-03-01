@@ -456,9 +456,3 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
     }
 
 }
-
-
-
-fn main() {
-    
-}

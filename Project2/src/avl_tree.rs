@@ -71,7 +71,7 @@ pub struct AVLTree<T> {
     pub root: Pointer,
 }
 
-impl<T: PartialOrd + Copy> AVLTree<T> {
+impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
     // Returns a new doubly linked list.
     pub fn new() -> Self {
         AVLTree {
@@ -80,26 +80,27 @@ impl<T: PartialOrd + Copy> AVLTree<T> {
         }
     }
 
-    pub fn len(&self) -> usize{
+    // Returns total number of nodes in tree
+    /*pub fn len(&self) -> usize{
         return self.slab.len();
-    }
+    }*/
 
+    // Returns true if tree is empty, false otherwise
     pub fn is_empty(&self) -> bool{
-        return self.len() == 0;
+        return self.root.is_null();
     }
 
+    // Returns height of tree
     pub fn get_height(&self) -> u32{
         return self.get_height_from_node(self.root);
     }
 
-    /*pub fn get_balance_factor(&self) -> i32{
-        return (self.get_height_from_node(self[self.root].right) as i32 - self.get_height_from_node(self[self.root].left) as i32);
-    }*/
-
+    // Returns balance factor used to determine balance of AVL tree. Neg number = left heavy, pos number = right heavy
     pub fn get_balance_factor(&self, node: Pointer) -> i32{
         return (self.get_height_from_node(self[node].right) as i32 - self.get_height_from_node(self[node].left) as i32);
     }
 
+    // Returns height below node passed as argument
     pub fn get_height_from_node(&self, node: Pointer) -> u32{
         if node.is_null(){
             return 0;
@@ -111,6 +112,7 @@ impl<T: PartialOrd + Copy> AVLTree<T> {
         }
     }
 
+    // Insert node with value val into tree
     pub fn insert(&mut self, val: T){
         if self.root.is_null(){
             self.root = Pointer(self.slab.insert(Node {
@@ -250,40 +252,97 @@ impl<T: PartialOrd + Copy> AVLTree<T> {
             }
         }
     }
+
+    // Rebalance to ensure AVL tree properties are maintained
     pub fn rebalance(&mut self, mut node: Pointer){
+        //println!("BALANCE {:?}", self.get_balance_factor(node));
         while(!node.is_null()){
-            println!("Balance Facor {:?}", self.get_balance_factor(node));
             if self.get_balance_factor(node) < -1{
-                println!("Left Heavy Need to right rotate");
-                println!("HEIGHT {:?}", self.get_height());
+                // Left heavy so rotate right
                 self.right_rotate(node);
-                //self.right_rotate(self.root);
-                println!("HEIGHT {:?}", self.get_height());
             }
             else if self.get_balance_factor(node) > 1{
-                println!("Right Heavy Need to left rotate");
-                println!("HEIGHT {:?}", self.get_height());
+                // Right heavy so rotate left
                 self.left_rotate(node);
-                //self.left_rotate(self.root);
-                println!("HEIGHT {:?}", self.get_height());
             }
             node = self[node].parent;
         }
-        /*if self.get_balance_factor() < -1{
-            println!("Left Heavy Need to right rotate");
-            println!("HEIGHT {:?}", self.get_height());
-            self.right_rotate(node);
-            //self.right_rotate(self.root);
-            println!("HEIGHT {:?}", self.get_height());
+    }
+
+    pub fn get_node(&self, val: T) -> Pointer{
+        let node = self.get_node_from_node(self.root, val);
+
+        if node.is_null(){
+            panic!("Node does not exist!")
         }
-        else if self.get_balance_factor() > 1{
-            println!("Right Heavy Need to left rotate");
-            println!("HEIGHT {:?}", self.get_height());
-            self.left_rotate(node);
-            //self.left_rotate(self.root);
-            println!("HEIGHT {:?}", self.get_height());
+        return node;
+    }
+
+    pub fn get_node_from_node(&self, node: Pointer, val:T) -> Pointer{
+        if node.is_null(){
+            return Pointer::null();
         }
-        else{return;}*/
+        else{
+            if self[node].value == val{
+                return node;
+            }
+            else if val > self[node].value{
+                return self.get_node_from_node(self[node].right, val);
+            }
+            else{
+                return self.get_node_from_node(self[node].left, val);
+            }
+        }
+    }
+
+    pub fn delete(&mut self, val: T) /*-> T*/{
+        let remove = self.get_node(val);
+        let mut parent = self[remove].parent;
+        // Three cases no children, 1 children, 2 children
+        if self[remove].left.is_null() && self[remove].right.is_null(){
+            // No children just delete node
+            println!("DELETE NO CHILDREN");
+            if self[self[remove].parent].left == remove{
+                self[parent].left = Pointer::null();
+            }
+            else{
+                self[parent].right = Pointer::null();
+            }
+        }
+        else if !self[remove].left.is_null() && !self[remove].right.is_null(){
+            // Two childre need to find replacement node
+            println!("DELETE TWO CHILDREN");
+        }
+        else{
+            println!("DELETE ONE CHILD");
+            if !self[remove].left.is_null(){
+                if self[self[remove].parent].left == remove{
+                    let mut left = self[remove].left;
+                    self[parent].left = left;
+                    self[left].parent = parent;
+                }
+                else{
+                    let mut left = self[remove].left;
+                    self[parent].right = left;
+                    self[left].parent = parent;
+                }
+            }
+            else{
+                if self[self[remove].parent].left == remove{
+                    let mut right = self[remove].right;
+                    self[parent].left = right;
+                    self[right].parent = parent;
+                }
+                else{
+                    let mut right = self[remove].right;
+                    self[parent].right = right;
+                    self[right].parent = parent;
+                }
+            }
+        }
+        
+        self.rebalance(parent);
+        //self.slab.remove(remove.0).value;
     }
 
 }
