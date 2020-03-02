@@ -9,18 +9,48 @@ extern crate slab;
 impl<T: fmt::Debug + Copy + fmt::Debug> fmt::Debug for AVLTree<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 
-        fn write_recursive<T: fmt::Debug + Copy>(avlTree: &AVLTree<T>, node: Pointer, f: &mut fmt::Formatter){
+        // recursivley print the tree in an ordered fashion
+        fn write_recursive<T: fmt::Debug + Copy>(avltree: &AVLTree<T>, node: Pointer, f: &mut fmt::Formatter){
             if node.is_null(){
                 write!(f, "").unwrap();
             }
             else{
-                write_recursive(avlTree, avlTree[node].left, f);
-                write!(f, "({:?}), ", avlTree[node].value).unwrap();
-                write_recursive(avlTree, avlTree[node].right, f);
+                write_recursive(avltree, avltree[node].left, f);
+                let left = avltree[node].left;
+                let right = avltree[node].right;
+                let parent = avltree[node].parent;
+
+                write!(f, "(value = {:?},", avltree[node].value).unwrap();
+                
+                if left.is_null(){
+                    write!(f, "left = NULL, ").unwrap();
+                }
+                else{
+                    write!(f, "left = {:?}, ", avltree[left].value).unwrap();
+                }
+
+                if right.is_null(){
+                    write!(f, "right = NULL, ").unwrap();
+                }
+                else{
+                    write!(f, "right = {:?}, ", avltree[right].value).unwrap();
+                }
+
+                if parent.is_null(){
+                    write!(f, "parent = NULL").unwrap();
+                }
+                else{
+                    write!(f, "parent = {:?}", avltree[parent].value).unwrap();
+                }
+
+                write!(f, "), \n").unwrap();
+
+                write_recursive(avltree, avltree[node].right, f);
+
             }
         }
 
-        write!(f, "In order traversal: (\n")?;
+        write!(f, "In order traversal:(\n")?;
         write_recursive(&self, self.root, f);
         write!(f, ")")?;
         
@@ -251,12 +281,24 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
     pub fn rebalance(&mut self, mut node: Pointer){
         while !node.is_null(){
             let bal = self.get_balance_factor(node);
-            if bal < -1{
+            if bal < -1{                
                 // Left heavy so rotate right
+                let y = self[node].left;
+                let bal_y = self.get_balance_factor(y);
+                if bal_y > 0 {
+                    // Need left-right rotate
+                    self.left_rotate(y);
+                }
                 self.right_rotate(node);
             }
             else if bal > 1{
                 // Right heavy so rotate left
+                let y = self[node].right;
+                let bal_y = self.get_balance_factor(y);
+                if bal_y < 0 {
+                    // Need right-left rortate
+                    self.right_rotate(y);
+                }
                 self.left_rotate(node);
             }
             node = self[node].parent;
