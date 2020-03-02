@@ -129,7 +129,6 @@ pub struct RedBlackTree<T> {
     pub root: Pointer,
 }
 
-//   {"key":-8,"value":-0.94,"left":7,"right":2,"up":0}
 fn addBinaryNodes<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::Decodable + std::fmt::Display + std::string::ToString>(mut encoded: &mut String, rbTree: &RedBlackTree<T>, node: Pointer) {
     if node.is_null(){
         return;
@@ -216,10 +215,6 @@ impl<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::D
     
     pub fn print(&self){
         println!("{:?}", self);
-    }
-
-    pub fn pretty_print(&self) {
-        println!("{:#?}", self);
     }
 
     pub fn reIndex(&self) -> Self{

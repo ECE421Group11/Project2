@@ -6,7 +6,6 @@ use std::io::{stdin, stdout, Write};
 
 pub struct CommandLineInterface{}
 
-
 impl CommandLineInterface{
     pub fn run(&self){
         let mut intro = 1;

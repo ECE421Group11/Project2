@@ -134,11 +134,11 @@ impl<K: Ord + Copy + Debug + Display, V: Debug + Copy + Display> Tree<K, V> {
         }
         let _ = write!(f,
                        "{key:>width$} ",
-                       key = Green.bold().paint(node.key),
+                       key = Red.bold().paint(node.key),
                        width = 2);
         let _ = write!(f,
                        "{value:>width$}\n",
-                       value = Blue.bold().paint(format!("{:.*}", 2, node.value)),
+                       value = Blue.bold().paint(format!("")),
                        width = 4);
  
         // Overwrite last element before continuing traversal

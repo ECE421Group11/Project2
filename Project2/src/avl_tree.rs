@@ -1,16 +1,19 @@
 // Our code base is adapted from: https://play.rust-lang.org/?gist=d65d605a48d38648737ad2ae38f46434&version=stable
 
 use slab::Slab;
-use std::fmt;
+use std::fmt::{Debug, Display, Formatter, Result};
 use std::ops::{Index, IndexMut};
 use std::cmp;
 extern crate slab;
+use crate::pretty_print;
 
-impl<T: fmt::Debug + Copy + fmt::Debug> fmt::Debug for AVLTree<T> {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+use rustc_serialize::json;
+
+impl<T: Debug + Copy + Display + std::cmp::Ord + rustc_serialize::Decodable> Debug for AVLTree<T> {
+    fn fmt(&self, f: &mut Formatter) -> Result {
 
         // recursivley print the tree in an ordered fashion
-        fn write_recursive<T: fmt::Debug + Copy>(avltree: &AVLTree<T>, node: Pointer, f: &mut fmt::Formatter){
+        fn write_recursive<T: Debug + Copy>(avltree: &AVLTree<T>, node: Pointer, f: &mut Formatter){
             if node.is_null(){
                 write!(f, "").unwrap();
             }
@@ -50,6 +53,17 @@ impl<T: fmt::Debug + Copy + fmt::Debug> fmt::Debug for AVLTree<T> {
             }
         }
 
+        fn write_pretty(tree: &pretty_print::Tree<i32, f32>, f: &mut Formatter) {
+            if tree.root.is_none() {
+                write!(f, "[empty]\n");
+            } else {
+                let mut v: Vec<pretty_print::DisplayElement> = Vec::new();
+                tree.display(tree.root, pretty_print::Side::Up, &mut v, f);
+            }
+        }
+
+        let binary_tree: pretty_print::Tree<i32, f32> = self.create_binary_tree();
+        write_pretty(&binary_tree, f);
         write!(f, "In order traversal:(\n")?;
         write_recursive(&self, self.root, f);
         write!(f, ")")?;
@@ -99,7 +113,67 @@ pub struct AVLTree<T> {
     pub root: Pointer,
 }
 
-impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
+fn addBinaryNodes<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::Decodable + Display + std::string::ToString>(mut encoded: &mut String, avltree: &AVLTree<T>, node: Pointer) {
+    if node.is_null(){
+        return;
+    }
+    else{
+        addBinaryNodes(&mut encoded, avltree, avltree[node].right);
+
+        let left = avltree[node].left;
+        let right = avltree[node].right;
+        let parent = avltree[node].parent;
+        let Pointer(left_int) = left;
+        let Pointer(right_int) = right;
+        let Pointer(up_int) = parent;
+
+        // start the node encoding
+        encoded.push_str("{\"key\":");
+        encoded.push_str(&avltree[node].value.to_string());
+        encoded.push_str(",\"value\":0,");
+        
+        if left.is_null(){
+            encoded.push_str("\"left\":null,");
+        }
+        else{
+            encoded.push_str("\"left\":");
+            encoded.push_str(&left_int.to_string());
+            encoded.push_str(",");
+        }
+
+        if right.is_null(){
+            encoded.push_str("\"right\":null,");
+        }
+        else{
+            encoded.push_str("\"right\":");
+            encoded.push_str(&right_int.to_string());
+            encoded.push_str(",");
+        }
+
+        if parent.is_null() {
+            encoded.push_str("\"up\":null");
+        } else {
+            encoded.push_str("\"up\":");
+            encoded.push_str(&up_int.to_string());
+        }         
+
+        // node cap
+        encoded.push_str("},");
+
+        addBinaryNodes(&mut encoded, avltree, avltree[node].left);
+        return;
+    }
+}
+
+fn recursive_reindex<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::Decodable + Display + std::string::ToString>(avltree: &AVLTree<T>, node: Pointer, mut reindexed: &mut AVLTree<T>){
+    if !node.is_null(){
+        recursive_reindex(avltree, avltree[node].right, reindexed);
+        reindexed.insert(avltree[node].value);
+        recursive_reindex(avltree, avltree[node].left, reindexed);
+    }
+}
+
+impl<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::Decodable + std::fmt::Display + std::string::ToString> AVLTree<T> {
     // Returns a new doubly linked list.
     pub fn new() -> Self {
         AVLTree {
@@ -234,6 +308,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
             }
         }
     }
+
     pub fn right_rotate(&mut self, current: Pointer){
         let left = self[current].left;
 
@@ -444,6 +519,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
     pub fn count_leaf_nodes(&self) -> u32{
         return self.count_leaf_nodes_from_node(self.root);
     }
+
     pub fn count_leaf_nodes_from_node(&self, node: Pointer) -> u32{
         if node.is_null(){
             return 0;
@@ -461,6 +537,46 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
     // Print tree from left to right
     pub fn print_in_order_traversal(&self){
         println!("{:?}", self);
+    }
+
+    pub fn reIndex(&self) -> Self{
+        let mut reindexed = AVLTree {
+            slab: Slab::new(),
+            root: Pointer::null(),
+        };
+
+        recursive_reindex(&self, self.root, &mut reindexed);
+        return reindexed
+    }
+
+    pub fn create_binary_tree(&self) -> pretty_print::Tree<i32, f32> {
+        // if the tree is empty, return an empty encoded binary tree
+        if self.root.is_null() {
+            let encoded =  r#"{"root":null,"store":[]}"#;
+            let tree: pretty_print::Tree<i32, f32> = json::decode(&encoded).unwrap();
+            return tree;
+        }
+
+        // must re-index the tree from largest to smallest
+        let avltree = self.reIndex();
+
+        // create the encoded string starting from root
+        let mut encoded = String::from("{\"root\":");
+        let Pointer(root_int) = avltree.root;
+        encoded.push_str(&root_int.to_string());
+        encoded.push_str(",\"store\":[");
+
+        // recurse to add rest of nodes
+        addBinaryNodes(&mut encoded, &avltree, avltree.root);
+
+        // remove last ","
+        encoded.truncate(encoded.len() - 1);
+
+        // cap formatting
+        encoded.push_str("]}");
+        println!("{}", encoded);
+        let tree: pretty_print::Tree<i32, f32> = json::decode(&encoded).unwrap();
+        return tree;
     }
 
     // Find smallest value in right tree of head, used for delete
