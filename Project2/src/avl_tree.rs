@@ -313,6 +313,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
             if parent.is_null(){
                 let lefttree = self[remove].left;
                 self.root = replace;
+                self[replace].parent = Pointer::null();
                 self[replace].left = self[remove].left;
                 self[lefttree].parent = replace;
                 if self[remove].right == replace{
@@ -359,12 +360,14 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
             // One child, replace remove with child
             if parent.is_null(){
                 if self[remove].left.is_null(){
-                    self.root = self[remove].right;
-                    remove = self[remove].right;
+                    let right = self[remove].right;
+                    self.root = right;
+                    self[right].parent = Pointer::null();
                 }
                 else{
-                    self.root = self[remove].left;
-                    remove = self[remove].left;
+                    let left = self[remove].left;
+                    self.root = self[remove].left;      
+                    self[left].parent = Pointer::null();
                 }
             }
             else if !self[remove].left.is_null(){
