@@ -292,12 +292,15 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
 
     // Delete node with value val
     pub fn delete(&mut self, val: T) /*-> T*/{
-        let remove = self.get_node(val);
+        let mut remove = self.get_node(val);
         let parent = self[remove].parent;
         // Three cases no children, 1 children, 2 children
         if self[remove].left.is_null() && self[remove].right.is_null(){
             // No children just delete node
-            if self[self[remove].parent].left == remove{
+            if parent.is_null(){
+                self.root = Pointer::null();
+            }
+            else if self[self[remove].parent].left == remove{
                 self[parent].left = Pointer::null();
             }
             else{
@@ -307,7 +310,21 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
         else if !self[remove].left.is_null() && !self[remove].right.is_null(){
             // Two childre need to find replacement node
             let replace = self.min_of_right(remove);
-            if self[parent].left == remove{
+            if parent.is_null(){
+                let lefttree = self[remove].left;
+                self.root = replace;
+                self[replace].left = self[remove].left;
+                self[lefttree].parent = replace;
+                if self[remove].right == replace{
+                    self[replace].right = Pointer::null();
+                }
+                else{
+                    let righttree = self[remove].right;
+                    self[replace].right = self[remove].right;
+                    self[righttree].parent = replace;
+                }
+            }
+            else if self[parent].left == remove{
                 let lefttree = self[remove].left;
                 self[parent].left = replace;
                 self[replace].parent = parent;
@@ -340,7 +357,17 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
         }
         else{
             // One child, replace remove with child
-            if !self[remove].left.is_null(){
+            if parent.is_null(){
+                if self[remove].left.is_null(){
+                    self.root = self[remove].right;
+                    remove = self[remove].right;
+                }
+                else{
+                    self.root = self[remove].left;
+                    remove = self[remove].left;
+                }
+            }
+            else if !self[remove].left.is_null(){
                 if self[self[remove].parent].left == remove{
                     let left = self[remove].left;
                     self[parent].left = left;
@@ -394,6 +421,9 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
     // Find smallest value in right tree of head, used for delete
     pub fn min_of_right(&self, head: Pointer)-> Pointer{
         let mut current = self[head].right;
+        if current.is_null(){
+            return current;
+        }
 
         while !self[current].left.is_null(){
             current = self[current].left;
