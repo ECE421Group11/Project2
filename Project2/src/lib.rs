@@ -2,3 +2,4 @@
 pub mod red_black_tree;
 pub mod avl_tree;
 pub mod command_line_interface;
+pub mod pretty_print;

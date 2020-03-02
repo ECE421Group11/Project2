@@ -239,6 +239,7 @@ fn avl_delete(){
 
 
 fn main() {
+    env::set_var("RUST_BACKTRACE", "1");
     let command_line_interface = CommandLineInterface{};
     command_line_interface.run();
 }

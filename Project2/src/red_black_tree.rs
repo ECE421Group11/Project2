@@ -1,16 +1,21 @@
 // Disclaimer: Our ECE 421 group worked on this together
 // Our code base is adapted from: https://play.rust-lang.org/?gist=d65d605a48d38648737ad2ae38f46434&version=stable
 
+extern crate slab;
+use crate::pretty_print;
 use slab::Slab;
-use std::fmt;
+use std::fmt::{Debug, Display, Formatter, Result};
 use std::ops::{Index, IndexMut};
 use std::cmp;
-extern crate slab;
+use std::env;
 
-impl<T: fmt::Debug + Copy + fmt::Debug> fmt::Debug for RedBlackTree<T> {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+use rustc_serialize::json;
 
-        fn write_recursive<T: fmt::Debug + Copy>(rbTree: &RedBlackTree<T>, node: Pointer, f: &mut fmt::Formatter){
+impl<T: Debug + Copy + Display + std::cmp::Ord + rustc_serialize::Decodable> Debug for RedBlackTree<T> {
+
+    fn fmt(&self, f: &mut Formatter) -> Result {
+
+        fn write_recursive<T: Debug + Copy>(rbTree: &RedBlackTree<T>, node: Pointer, f: &mut Formatter){
             if node.is_null(){
                 write!(f, "").unwrap();
             }
@@ -50,6 +55,17 @@ impl<T: fmt::Debug + Copy + fmt::Debug> fmt::Debug for RedBlackTree<T> {
             }
         }
 
+        fn write_pretty(tree: &pretty_print::Tree<i32, f32>, f: &mut Formatter) {
+            if tree.root.is_none() {
+                write!(f, "[empty]\n");
+            } else {
+                let mut v: Vec<pretty_print::DisplayElement> = Vec::new();
+                tree.display(tree.root, pretty_print::Side::Up, &mut v, f);
+            }
+        }
+
+        let binary_tree: pretty_print::Tree<i32, f32> = self.create_binary_tree();
+        write_pretty(&binary_tree, f);
         write!(f, "In order traversal:(\n")?;
         write_recursive(&self, self.root, f);
         write!(f, ")")?;
@@ -89,7 +105,7 @@ impl<T> IndexMut<Pointer> for RedBlackTree<T> {
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Copy, Debug, PartialEq)]
 pub enum NodeColor {
     Red,
     Black,
@@ -109,7 +125,78 @@ pub struct RedBlackTree<T> {
     pub root: Pointer,
 }
 
-impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
+//   {"key":-8,"value":-0.94,"left":7,"right":2,"up":0}
+fn addBinaryNodes<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::Decodable + std::fmt::Display + std::string::ToString>(mut encoded: &mut String, rbTree: &RedBlackTree<T>, node: Pointer) {
+    if node.is_null(){
+        return;
+    }
+    else{
+        addBinaryNodes(&mut encoded, rbTree, rbTree[node].right);
+
+        let left = rbTree[node].left;
+        let right = rbTree[node].right;
+        let parent = rbTree[node].parent;
+        let Pointer(left_int) = left;
+        let Pointer(right_int) = right;
+        let Pointer(up_int) = parent;
+
+        
+        // encoded color from node
+        let mut color = "0";  // Red
+        match rbTree[node].color {
+            Black => {color="1";}, // Black
+            _ => {},
+        }
+
+        // start the node encoding
+        encoded.push_str("{\"key\":");
+        encoded.push_str(&rbTree[node].value.to_string());
+        encoded.push_str(",\"value\":");
+        encoded.push_str(color);
+        encoded.push_str(",");
+        
+        if left.is_null(){
+            encoded.push_str("\"left\":null,");
+        }
+        else{
+            encoded.push_str("\"left\":");
+            encoded.push_str(&left_int.to_string());
+            encoded.push_str(",");
+        }
+
+        if right.is_null(){
+            encoded.push_str("\"right\":null,");
+        }
+        else{
+            encoded.push_str("\"right\":");
+            encoded.push_str(&right_int.to_string());
+            encoded.push_str(",");
+        }
+
+        if parent.is_null() {
+            encoded.push_str("\"up\":null");
+        } else {
+            encoded.push_str("\"up\":");
+            encoded.push_str(&up_int.to_string());
+        }         
+
+        // node cap
+        encoded.push_str("},");
+
+        addBinaryNodes(&mut encoded, rbTree, rbTree[node].left);
+        return;
+    }
+}
+
+fn recursive_reindex<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::Decodable + std::fmt::Display + std::string::ToString>(rbTree: &RedBlackTree<T>, node: Pointer, mut reindexed: &mut RedBlackTree<T>){
+    if !node.is_null(){
+        recursive_reindex(rbTree, rbTree[node].right, reindexed);
+        reindexed.insert(rbTree[node].value);
+        recursive_reindex(rbTree, rbTree[node].left, reindexed);
+    }
+}
+
+impl<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::Decodable + std::fmt::Display + std::string::ToString> RedBlackTree<T> {
     // Returns a new doubly linked list.
     pub fn new() -> Self {
         RedBlackTree {
@@ -122,8 +209,74 @@ impl<T: PartialOrd + Copy + fmt::Debug> RedBlackTree<T> {
         return self.root.is_null();
     }
     
-    pub fn print_in_order_traversal(&self){
+    pub fn print(&self){
         println!("{:?}", self);
+    }
+
+    pub fn pretty_print(&self) {
+        println!("{:#?}", self);
+    }
+
+    pub fn reIndex(&self) -> Self{
+        let mut reindexed = RedBlackTree {
+            slab: Slab::new(),
+            root: Pointer::null(),
+        };
+
+        recursive_reindex(&self, self.root, &mut reindexed);
+        return reindexed
+    }
+
+    pub fn create_binary_tree(&self) -> pretty_print::Tree<i32, f32> {
+        // if the tree is empty, return an empty encoded binary tree
+        if self.root.is_null() {
+            let encoded =  r#"{"root":null,"store":[]}"#;
+        //     let encoded = r#"{"root":0,"store":[{"key":0,"value":0,"left":1,"right":3,
+        // "up":null},{"key":-8,"value":-8,"left":7,"right":2,"up":0}, {"key":-1,
+        // "value":-1,"left":8,"right":null,"up":1},{"key":7, "value":7,"left":4,
+        // "right":9,"up":0},{"key":5,"value":5,"left":5,"right":null,"up":3},
+        // {"key":4,"value":4,"left":6,"right":null,"up":4},{"key":3,"value":3,
+        // "left":null,"right":null,"up":5},{"key":-10,"value":-10,"left":null,
+        // "right":13,"up":1},{"key":-6,"value":-6,"left":null,"right":10,"up":2},
+        // {"key":9,"value":9,"left":12,"right":null,"up":3},{"key":-3,"value":-3,
+        // "left":null,"right":11,"up":8},{"key":-2,"value":-2,"left":null,"right":null,
+        // "up":10},{"key":8,"value":8,"left":null,"right":null,"up":9},{"key":-9,
+        // "value":-9,"left":null,"right":null,"up":7}]}"#;
+        // let encoded = r#"{"root":0,"store":[{"key":0,"value":0,"left":1,"right":3,
+        // "up":null},{"key":-8,"value":-8,"left":7,"right":2,"up":0}, {"key":-1,
+        // "value":-1,"left":8,"right":null,"up":1},{"key":7, "value":7,"left":4,
+        // "right":9,"up":0},{"key":5,"value":5,"left":5,"right":null,"up":3},
+        // {"key":4,"value":4,"left":6,"right":null,"up":4},{"key":3,"value":3,
+        // "left":null,"right":null,"up":5},{"key":-10,"value":-10,"left":null,
+        // "right":13,"up":1},{"key":-6,"value":-6,"left":null,"right":10,"up":2},
+        // {"key":9,"value":9,"left":12,"right":null,"up":3},{"key":-3,"value":-3,
+        // "left":null,"right":11,"up":8},{"key":-2,"value":-2,"left":null,"right":null,
+        // "up":10},{"key":8,"value":8,"left":null,"right":null,"up":9},{"key":-9,
+        // "value":-9,"left":null,"right":null,"up":7}]}"#;
+            let tree: pretty_print::Tree<i32, f32> = json::decode(&encoded).unwrap();
+            return tree;
+        }
+
+        // must re-index the tree from largest to smallest
+        let rbtree = self.reIndex();
+
+        // create the encoded string starting from root
+        let mut encoded = String::from("{\"root\":");
+        let Pointer(root_int) = rbtree.root;
+        encoded.push_str(&root_int.to_string());
+        encoded.push_str(",\"store\":[");
+
+        // recurse to add rest of nodes
+        addBinaryNodes(&mut encoded, &rbtree, rbtree.root);
+
+        // remove last ","
+        encoded.truncate(encoded.len() - 1);
+
+        // cap formatting
+        encoded.push_str("]}");
+        println!("{}", encoded);
+        let tree: pretty_print::Tree<i32, f32> = json::decode(&encoded).unwrap();
+        return tree;
     }
 
     pub fn get_node(&self, val: T) -> Pointer{
