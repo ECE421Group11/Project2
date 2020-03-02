@@ -1,19 +1,19 @@
 #![allow(non_snake_case)]
 #[allow(unused_imports)]
-use RB-AVL-TREE::red_black_tree::RedBlackTree;
+use Project2::red_black_tree::RedBlackTree;
 
 #[allow(unused_imports)]
-use RB-AVL-TREE::red_black_tree::NodeColor;
+use Project2::red_black_tree::NodeColor;
 
 #[allow(unused_imports)]
-use RB-AVL-TREE::binary_tree::BinaryTree;
+use Project2::binary_tree::BinaryTree;
 
 #[allow(unused_imports)]
-use RB-AVL-TREE::red_black_tree::Pointer;
-use RB-AVL-TREE::command_line_interface::CommandLineInterface;
+use Project2::red_black_tree::Pointer;
+use Project2::command_line_interface::CommandLineInterface;
 
 #[allow(unused_imports)]
-use RB-AVL-TREE::avl_tree::AVLTree;
+use Project2::avl_tree::AVLTree;
 
 #[allow(unused_imports)]
 use std::io::{stdin, stdout, Write};

@@ -1,6 +1,6 @@
 [package]
-name = "RB-AVL-TREE"
-version = "0.2.0"
+name = "Project2"
+version = "0.1.0"
 authors = ["Glenn, Tymoore, Micheal, Andrew"]
 edition = "2018"
 description = "Implementations of red black tree and AVL tree"
