@@ -147,7 +147,7 @@ fn addBinaryNodes<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc
         // encoded color from node
         let mut color = "0";  // Red
         match rbTree[node].color {
-            Black => {color="1";}, // Black
+            NodeColor::Black => {color="1";}, // Black
             _ => {},
         }
 
@@ -252,7 +252,6 @@ impl<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::D
 
         // cap formatting
         encoded.push_str("]}");
-        println!("{}", encoded);
         let tree: pretty_print::Tree<i32, f32> = json::decode(&encoded).unwrap();
         return tree;
     }

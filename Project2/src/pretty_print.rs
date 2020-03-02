@@ -132,14 +132,32 @@ impl<K: Ord + Copy + Debug + Display, V: Debug + Copy + Display> Tree<K, V> {
         for e in elems.clone() {
             let _ = write!(f, "{}", e.string());
         }
-        let _ = write!(f,
-                       "{key:>width$} ",
-                       key = Red.bold().paint(node.key),
-                       width = 2);
-        let _ = write!(f,
-                       "{value:>width$}\n",
-                       value = Blue.bold().paint(format!("")),
-                       width = 4);
+
+        let color:&str = &node.value.to_string();
+        match color {
+            "0" => { // RED
+                let _ = write!(f,
+                    "{key:>width$} ",
+                    key = Red.bold().paint(node.key),
+                    width = 2);
+                let _ = write!(f,
+                                "{value:>width$}\n",
+                                value = Red.bold().paint(format!("Red")),
+                                width = 4);
+            }, 
+            "1" => { // BLACK
+                let _ = write!(f,
+                    "{key:>width$} ",
+                    key = Green.bold().paint(node.key),
+                    width = 2);
+                let _ = write!(f,
+                                "{value:>width$}\n",
+                                value = Green.bold().paint(format!("Black")),
+                                width = 4);
+            }, 
+            _ => {},
+        }
+        
  
         // Overwrite last element before continuing traversal
         elems[hindex] = tail;
