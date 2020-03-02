@@ -1,7 +1,7 @@
 [package]
 name = "Project2"
-version = "0.1.0"
-authors = ["Glenn, Tymoore, Michael, Andrew"]
+version = "0.1.1"
+authors = ["Glenn, Tymoore, Micheal, Andrew"]
 edition = "2018"
 description = "Implementations of red black tree and AVL tree"
 documentation = "https://github.com/ECE421Group11/Project2"
@@ -10,7 +10,7 @@ repository = "https://github.com/ECE421Group11/Project2"
 readme = "repo.txt"
 keywords = ["redblacktree", "avltree", "tree", "rbtree"]
 categories = ["data-structures", "algorithms"]
-license = "license.txt"
+license = "MIT"
 
 [dependencies]
 slab = "0.4.2"
