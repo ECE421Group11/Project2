@@ -292,7 +292,7 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
 
     // Delete node with value val
     pub fn delete(&mut self, val: T) /*-> T*/{
-        let mut remove = self.get_node(val);
+        let remove = self.get_node(val);
         let parent = self[remove].parent;
         // Three cases no children, 1 children, 2 children
         if self[remove].left.is_null() && self[remove].right.is_null(){
@@ -360,11 +360,9 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
             if parent.is_null(){
                 if self[remove].left.is_null(){
                     self.root = self[remove].right;
-                    remove = self[remove].right;
                 }
                 else{
                     self.root = self[remove].left;
-                    remove = self[remove].left;
                 }
             }
             else if !self[remove].left.is_null(){
