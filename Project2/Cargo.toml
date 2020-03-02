@@ -1,6 +1,6 @@
 [package]
 name = "Project2"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Glenn, Tymoore, Micheal, Andrew"]
 edition = "2018"
 description = "Implementations of red black tree and AVL tree"
