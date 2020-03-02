@@ -154,8 +154,17 @@ impl<K: Ord + Copy + Debug + Display, V: Debug + Copy + Display> Tree<K, V> {
                                 "{value:>width$}\n",
                                 value = Green.bold().paint(format!("Black")),
                                 width = 4);
-            }, 
-            _ => {},
+            },
+            _ => { // FOR AVL
+                let _ = write!(f,
+                    "{key:>width$} ",
+                    key = Red.bold().paint(node.key),
+                    width = 2);
+                let _ = write!(f,
+                                "{value:>width$}\n",
+                                value = Red.bold().paint(format!("")),
+                                width = 4);
+            },
         }
         
  

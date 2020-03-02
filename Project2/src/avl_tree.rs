@@ -130,7 +130,7 @@ fn addBinaryNodes<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc
         // start the node encoding
         encoded.push_str("{\"key\":");
         encoded.push_str(&avltree[node].value.to_string());
-        encoded.push_str(",\"value\":0,");
+        encoded.push_str(",\"value\":3,");
         
         if left.is_null(){
             encoded.push_str("\"left\":null,");
