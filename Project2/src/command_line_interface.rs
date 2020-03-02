@@ -6,6 +6,7 @@ use std::io::{stdin, stdout, Write};
 
 pub struct CommandLineInterface{}
 
+
 impl CommandLineInterface{
     pub fn run(&self){
         let mut intro = 1;
@@ -105,6 +106,16 @@ impl CommandLineInterface{
                 "insert" => {
                     match args.peekable().peek() {
                         Some(val) => {
+                            let float:Result<f64, _> = FromStr::from_str(val);
+
+                            match float{
+                                Ok(_) => {},
+                                _=> {
+                                    println!("Invalid data type. Please try again.");
+                                    continue;
+                                },
+                            }
+
                             rbtree.insert(FromStr::from_str(val).unwrap());
                         },
                         None => {
@@ -115,6 +126,15 @@ impl CommandLineInterface{
                 "delete" => {
                     match args.peekable().peek() {
                         Some(val) => {
+                            let float:Result<f64, _> = FromStr::from_str(val);
+
+                            match float{
+                                Ok(_) => {},
+                                _=> {
+                                    println!("Invalid data type. Please try again.");
+                                    continue;
+                                },
+                            }
                             rbtree.delete(FromStr::from_str(val).unwrap());
                         },
                         None => {
@@ -183,6 +203,15 @@ impl CommandLineInterface{
                 "insert" => {
                     match args.peekable().peek() {
                         Some(val) => {
+                            let float:Result<f64, _> = FromStr::from_str(val);
+
+                            match float{
+                                Ok(_) => {},
+                                _=> {
+                                    println!("Invalid data type. Please try again.");
+                                    continue;
+                                },
+                            }
                             avltree.insert(FromStr::from_str(val).unwrap());
                         },
                         None => {
@@ -193,6 +222,15 @@ impl CommandLineInterface{
                 "delete" => {
                     match args.peekable().peek() {
                         Some(val) => {
+                            let float:Result<f64, _> = FromStr::from_str(val);
+
+                            match float{
+                                Ok(_) => {},
+                                _=> {
+                                    println!("Invalid data type. Please try again.");
+                                    continue;
+                                },
+                            }
                             avltree.delete(FromStr::from_str(val).unwrap());
                         },
                         None => {
@@ -207,7 +245,7 @@ impl CommandLineInterface{
                     println!("{:?}", avltree.get_height());
                 },
                 "print" => {
-                    println!("{:?}", avltree.print_in_order_traversal());
+                    avltree.print_in_order_traversal();
                 },
                 "isempty" => {
                     println!("{:?}", avltree.is_empty());

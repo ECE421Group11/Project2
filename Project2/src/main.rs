@@ -1,10 +1,12 @@
 #![allow(non_snake_case)]
-//extern crate red_black_tree;
 #[allow(unused_imports)]
 use Project2::red_black_tree::RedBlackTree;
 
 #[allow(unused_imports)]
 use Project2::red_black_tree::NodeColor;
+
+#[allow(unused_imports)]
+use Project2::binary_tree::BinaryTree;
 
 #[allow(unused_imports)]
 use Project2::red_black_tree::Pointer;
@@ -21,6 +23,7 @@ use std::str::FromStr;
 
 #[allow(unused_imports)]
 use std::env;
+
 
 #[test]
 fn test_rb_insert(){

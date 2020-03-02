@@ -1,3 +1,5 @@
+// Our code base is adapted from: https://play.rust-lang.org/?gist=d65d605a48d38648737ad2ae38f46434&version=stable
+
 use slab::Slab;
 use std::fmt;
 use std::ops::{Index, IndexMut};
@@ -7,18 +9,48 @@ extern crate slab;
 impl<T: fmt::Debug + Copy + fmt::Debug> fmt::Debug for AVLTree<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 
-        fn write_recursive<T: fmt::Debug + Copy>(avlTree: &AVLTree<T>, node: Pointer, f: &mut fmt::Formatter){
+        // recursivley print the tree in an ordered fashion
+        fn write_recursive<T: fmt::Debug + Copy>(avltree: &AVLTree<T>, node: Pointer, f: &mut fmt::Formatter){
             if node.is_null(){
                 write!(f, "").unwrap();
             }
             else{
-                write_recursive(avlTree, avlTree[node].left, f);
-                write!(f, "({:?}), ", avlTree[node].value).unwrap();
-                write_recursive(avlTree, avlTree[node].right, f);
+                write_recursive(avltree, avltree[node].left, f);
+                let left = avltree[node].left;
+                let right = avltree[node].right;
+                let parent = avltree[node].parent;
+
+                write!(f, "(value = {:?},", avltree[node].value).unwrap();
+                
+                if left.is_null(){
+                    write!(f, "left = NULL, ").unwrap();
+                }
+                else{
+                    write!(f, "left = {:?}, ", avltree[left].value).unwrap();
+                }
+
+                if right.is_null(){
+                    write!(f, "right = NULL, ").unwrap();
+                }
+                else{
+                    write!(f, "right = {:?}, ", avltree[right].value).unwrap();
+                }
+
+                if parent.is_null(){
+                    write!(f, "parent = NULL").unwrap();
+                }
+                else{
+                    write!(f, "parent = {:?}", avltree[parent].value).unwrap();
+                }
+
+                write!(f, "), \n").unwrap();
+
+                write_recursive(avltree, avltree[node].right, f);
+
             }
         }
 
-        write!(f, "Tree(")?;
+        write!(f, "In order traversal:(\n")?;
         write_recursive(&self, self.root, f);
         write!(f, ")")?;
         
@@ -75,11 +107,6 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
             root: Pointer::null(),
         }
     }
-
-    // Returns total number of nodes in tree
-    /*pub fn len(&self) -> usize{
-        return self.slab.len();
-    }*/
 
     // Returns true if tree is empty, false otherwise
     pub fn is_empty(&self) -> bool{
@@ -253,12 +280,25 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
     // Rebalance to ensure AVL tree properties are maintained
     pub fn rebalance(&mut self, mut node: Pointer){
         while !node.is_null(){
-            if self.get_balance_factor(node) < -1{
+            let bal = self.get_balance_factor(node);
+            if bal < -1{                
                 // Left heavy so rotate right
+                let y = self[node].left;
+                let bal_y = self.get_balance_factor(y);
+                if bal_y > 0 {
+                    // Need left-right rotate
+                    self.left_rotate(y);
+                }
                 self.right_rotate(node);
             }
-            else if self.get_balance_factor(node) > 1{
+            else if bal > 1{
                 // Right heavy so rotate left
+                let y = self[node].right;
+                let bal_y = self.get_balance_factor(y);
+                if bal_y < 0 {
+                    // Need right-left rortate
+                    self.right_rotate(y);
+                }
                 self.left_rotate(node);
             }
             node = self[node].parent;
@@ -299,7 +339,10 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
         // Three cases no children, 1 children, 2 children
         if self[remove].left.is_null() && self[remove].right.is_null(){
             // No children just delete node
-            if self[self[remove].parent].left == remove{
+            if parent.is_null(){
+                self.root = Pointer::null();
+            }
+            else if self[self[remove].parent].left == remove{
                 self[parent].left = Pointer::null();
             }
             else{
@@ -309,7 +352,22 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
         else if !self[remove].left.is_null() && !self[remove].right.is_null(){
             // Two childre need to find replacement node
             let replace = self.min_of_right(remove);
-            if self[parent].left == remove{
+            if parent.is_null(){
+                let lefttree = self[remove].left;
+                self.root = replace;
+                self[replace].parent = Pointer::null();
+                self[replace].left = self[remove].left;
+                self[lefttree].parent = replace;
+                if self[remove].right == replace{
+                    self[replace].right = Pointer::null();
+                }
+                else{
+                    let righttree = self[remove].right;
+                    self[replace].right = self[remove].right;
+                    self[righttree].parent = replace;
+                }
+            }
+            else if self[parent].left == remove{
                 let lefttree = self[remove].left;
                 self[parent].left = replace;
                 self[replace].parent = parent;
@@ -342,7 +400,19 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
         }
         else{
             // One child, replace remove with child
-            if !self[remove].left.is_null(){
+            if parent.is_null(){
+                if self[remove].left.is_null(){
+                    let right = self[remove].right;
+                    self.root = right;
+                    self[right].parent = Pointer::null();
+                }
+                else{
+                    let left = self[remove].left;
+                    self.root = self[remove].left;      
+                    self[left].parent = Pointer::null();
+                }
+            }
+            else if !self[remove].left.is_null(){
                 if self[self[remove].parent].left == remove{
                     let left = self[remove].left;
                     self[parent].left = left;
@@ -396,6 +466,9 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
     // Find smallest value in right tree of head, used for delete
     pub fn min_of_right(&self, head: Pointer)-> Pointer{
         let mut current = self[head].right;
+        if current.is_null(){
+            return current;
+        }
 
         while !self[current].left.is_null(){
             current = self[current].left;

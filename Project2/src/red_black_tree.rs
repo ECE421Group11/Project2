@@ -74,9 +74,11 @@ impl<T: Debug + Copy + Display + std::cmp::Ord + rustc_serialize::Decodable> Deb
     }
 }
 
+// a respresentation of a pointer to a node
 #[derive(Eq, PartialEq, Copy, Clone, Debug)]
 pub struct Pointer(usize);
 
+// define null for pointers
 impl Pointer {
     #[inline]
     pub fn null() -> Pointer {
@@ -111,6 +113,7 @@ pub enum NodeColor {
     Black,
 }
 
+// defining a node
 #[derive(Debug)]
 pub struct Node<T> {
     pub value: T,
@@ -120,6 +123,7 @@ pub struct Node<T> {
     pub color: NodeColor,
 }
 
+// defining the red black tree structure
 pub struct RedBlackTree<T> {
     pub slab: Slab<Node<T>>,
     pub root: Pointer,
@@ -199,12 +203,13 @@ fn recursive_reindex<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + ru
 impl<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::Decodable + std::fmt::Display + std::string::ToString> RedBlackTree<T> {
     // Returns a new doubly linked list.
     pub fn new() -> Self {
-        RedBlackTree {
+        return RedBlackTree {
             slab: Slab::new(),
             root: Pointer::null(),
         }
     }
 
+    // checks to see if a red black tree is empty
     pub fn is_empty(&self) -> bool{
         return self.root.is_null();
     }
@@ -231,28 +236,6 @@ impl<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::D
         // if the tree is empty, return an empty encoded binary tree
         if self.root.is_null() {
             let encoded =  r#"{"root":null,"store":[]}"#;
-        //     let encoded = r#"{"root":0,"store":[{"key":0,"value":0,"left":1,"right":3,
-        // "up":null},{"key":-8,"value":-8,"left":7,"right":2,"up":0}, {"key":-1,
-        // "value":-1,"left":8,"right":null,"up":1},{"key":7, "value":7,"left":4,
-        // "right":9,"up":0},{"key":5,"value":5,"left":5,"right":null,"up":3},
-        // {"key":4,"value":4,"left":6,"right":null,"up":4},{"key":3,"value":3,
-        // "left":null,"right":null,"up":5},{"key":-10,"value":-10,"left":null,
-        // "right":13,"up":1},{"key":-6,"value":-6,"left":null,"right":10,"up":2},
-        // {"key":9,"value":9,"left":12,"right":null,"up":3},{"key":-3,"value":-3,
-        // "left":null,"right":11,"up":8},{"key":-2,"value":-2,"left":null,"right":null,
-        // "up":10},{"key":8,"value":8,"left":null,"right":null,"up":9},{"key":-9,
-        // "value":-9,"left":null,"right":null,"up":7}]}"#;
-        // let encoded = r#"{"root":0,"store":[{"key":0,"value":0,"left":1,"right":3,
-        // "up":null},{"key":-8,"value":-8,"left":7,"right":2,"up":0}, {"key":-1,
-        // "value":-1,"left":8,"right":null,"up":1},{"key":7, "value":7,"left":4,
-        // "right":9,"up":0},{"key":5,"value":5,"left":5,"right":null,"up":3},
-        // {"key":4,"value":4,"left":6,"right":null,"up":4},{"key":3,"value":3,
-        // "left":null,"right":null,"up":5},{"key":-10,"value":-10,"left":null,
-        // "right":13,"up":1},{"key":-6,"value":-6,"left":null,"right":10,"up":2},
-        // {"key":9,"value":9,"left":12,"right":null,"up":3},{"key":-3,"value":-3,
-        // "left":null,"right":11,"up":8},{"key":-2,"value":-2,"left":null,"right":null,
-        // "up":10},{"key":8,"value":8,"left":null,"right":null,"up":9},{"key":-9,
-        // "value":-9,"left":null,"right":null,"up":7}]}"#;
             let tree: pretty_print::Tree<i32, f32> = json::decode(&encoded).unwrap();
             return tree;
         }
@@ -288,6 +271,7 @@ impl<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::D
         return node;
     }
 
+    // recursivley gets a node from below a specified node
     pub fn get_node_from_node(&self, node: Pointer, val:T) -> Pointer{
         if node.is_null(){
             return Pointer::null();
@@ -305,11 +289,12 @@ impl<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::D
         }
     }
     
+    // get the height of the tree
     pub fn get_height(&self) -> u32{
         return self.get_height_from_node(self.root);
     }
 
-
+    // recursivley gets the height below a node
     pub fn get_height_from_node(&self, node: Pointer) -> u32{
         if node.is_null(){
             return 0;
@@ -321,10 +306,12 @@ impl<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::D
         }
     }
 
+    // count the number of leaf nodes in the tree
     pub fn count_leaf_nodes(&self) -> u32{
         return self.count_leaf_nodes_from_node(self.root);
     }
 
+    // count the number of leaf nodes below a node
     pub fn count_leaf_nodes_from_node(&self, node: Pointer) -> u32{
         if node.is_null(){
             return 0;
@@ -339,6 +326,7 @@ impl<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::D
         }
     }
 
+    // get the uncle of a node
     pub fn get_uncle(&self, node: Pointer) -> Pointer{
         let parent = self[node].parent;
         if parent.is_null(){
@@ -370,6 +358,19 @@ impl<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::D
 
     }
 
+    // remove ownership of a node from the tree, effectivley deleting the node
+    pub fn transfer_and_remove_ownership(&mut self, val: T){
+        let mut newTree = RedBlackTree::new();
+        for i in 0..self.slab.len(){
+            if self.slab[i].value != val{
+                newTree.insert(self.slab[i].value);
+            }
+        }
+        self.slab = newTree.slab;
+        self.root = newTree.root;
+    }
+
+    // fix an insert
     pub fn insert_fixup(&mut self, node: Pointer){
         let parent = self[node].parent;
         if self[node].parent.is_null(){
@@ -393,14 +394,17 @@ impl<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::D
 
     }
 
+    // case 1 of fixing insert
     pub fn insert_case1(&mut self, node: Pointer){
         self[node].color = NodeColor::Black;
     }
 
+    // case 2 of fixing insert
     pub fn insert_case2(&mut self, _node: Pointer){
         return
     }
 
+    // case 3 of fixing insert
     pub fn insert_case3(&mut self, node: Pointer){
         let parent = self[node].parent;
         let uncle = self.get_uncle(node);
@@ -413,17 +417,7 @@ impl<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::D
         self.insert_fixup(grandparent);
     }
 
-    pub fn transfer_and_remove_ownership(&mut self, val: T){
-        let mut newTree = RedBlackTree::new();
-        for i in 0..self.slab.len(){
-            if self.slab[i].value != val{
-                newTree.insert(self.slab[i].value);
-            }
-        }
-        self.slab = newTree.slab;
-        self.root = newTree.root;
-    }
-
+    // case 4 of fixing insert
     pub fn insert_case4(&mut self, node: Pointer){
 
         let parent = self[node].parent;
@@ -449,6 +443,7 @@ impl<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::D
         self.insert_case4_part2(n);
     }
 
+    // case 4 part 2 of fixing insert
     pub fn insert_case4_part2(&mut self, node: Pointer){
         let parent = self[node].parent;
         let grandparent = self[parent].parent;
@@ -466,12 +461,14 @@ impl<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::D
         self[grandparent].color = NodeColor::Red;
     }
 
+    // delete a node from the tree
     pub fn delete(&mut self, val: T){
         if !self.get_node(val).is_null(){
             self.transfer_and_remove_ownership(val);
         }
     }
 
+    // insert a node into the tree
     pub fn insert(&mut self, val: T){
         if self.root.is_null(){
             self.root = Pointer(self.slab.insert(Node {
@@ -490,6 +487,7 @@ impl<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::D
         }
     }
 
+    // insert a node below the specified node
     pub fn insert_below_node(&mut self, val: T, node: Pointer) -> Pointer{
         let nodeValue = self[node].value;
         let left = self[node].left;
@@ -531,6 +529,7 @@ impl<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::D
         }
     }
 
+    // rotate the node left
     pub fn left_rotate(&mut self, current: Pointer){
         let right = self[current].right;
 
@@ -574,6 +573,7 @@ impl<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::D
         }
     }
 
+    // rotate the node right
     pub fn right_rotate(&mut self, current: Pointer){
         let left = self[current].left;
 

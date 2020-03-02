@@ -1,12 +1,25 @@
 [package]
 name = "Project2"
-version = "0.1.0"
-authors = ["Glenn <47393384+glnnrhodes@users.noreply.github.com>"]
+version = "0.1.2"
+authors = ["Glenn, Tymoore, Micheal, Andrew"]
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "Implementations of red black tree and AVL tree"
+documentation = "https://github.com/ECE421Group11/Project2"
+homepage = "https://github.com/ECE421Group11/Project2"
+repository = "https://github.com/ECE421Group11/Project2"
+readme = "repo.txt"
+keywords = ["redblacktree", "avltree", "tree", "rbtree"]
+categories = ["data-sructures", "algorithms"]
+license = "MIT"
 
 [dependencies]
 slab = "0.4.2"
 rustc-serialize = "0.3"
 term-painter = "0.2.4"
+
+[dev-dependencies]
+criterion = "0.3"
+
+[[bench]]
+name = "my_benchmark"
+harness = false
