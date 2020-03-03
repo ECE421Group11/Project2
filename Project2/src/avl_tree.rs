@@ -452,8 +452,8 @@ impl<T: PartialOrd + Copy + fmt::Debug> AVLTree<T> {
             return 0;
         }
         else{
-            let left = self.get_height_from_node(self[node].left);
-            let right = self.get_height_from_node(self[node].right);
+            let left = self.count_leaf_nodes_from_node(self[node].left);
+            let right = self.count_leaf_nodes_from_node(self[node].right);
             if left == right && left == 0{
                 return 1;
             }
