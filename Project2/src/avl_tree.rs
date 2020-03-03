@@ -1,5 +1,5 @@
 // Our code base is adapted from: https://play.rust-lang.org/?gist=d65d605a48d38648737ad2ae38f46434&version=stable
-
+#![allow(unused_must_use)]
 use slab::Slab;
 use std::fmt::{Debug, Display, Formatter, Result};
 use std::ops::{Index, IndexMut};
@@ -165,7 +165,7 @@ fn addBinaryNodes<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc
     }
 }
 
-fn recursive_reindex<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::Decodable + Display + std::string::ToString>(avltree: &AVLTree<T>, node: Pointer, mut reindexed: &mut AVLTree<T>){
+fn recursive_reindex<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::Decodable + Display + std::string::ToString>(avltree: &AVLTree<T>, node: Pointer, reindexed: &mut AVLTree<T>){
     if !node.is_null(){
         recursive_reindex(avltree, avltree[node].right, reindexed);
         reindexed.insert(avltree[node].value);

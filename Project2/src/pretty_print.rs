@@ -2,9 +2,10 @@
 // and is NOT designed by our 421 group, we use wrapper functions in order to apply our
 // structure to these function
 
-
+#[allow(unused_imports)]
 extern crate term_painter;
- 
+
+#[allow(unused_imports)]
 use rustc_serialize::json;
 use std::fmt::{Debug, Display, Formatter, Result};
 use term_painter::ToStyle;

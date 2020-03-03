@@ -1,12 +1,13 @@
 // Disclaimer: Our ECE 421 group worked on this together
 // Our code base is adapted from: https://play.rust-lang.org/?gist=d65d605a48d38648737ad2ae38f46434&version=stable
-
+#![allow(unused_must_use)]
 extern crate slab;
 use crate::pretty_print;
 use slab::Slab;
 use std::fmt::{Debug, Display, Formatter, Result};
 use std::ops::{Index, IndexMut};
 use std::cmp;
+#[allow(unused_imports)]
 use std::env;
 
 use rustc_serialize::json;
@@ -191,7 +192,7 @@ fn addBinaryNodes<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc
     }
 }
 
-fn recursive_reindex<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::Decodable + std::fmt::Display + std::string::ToString>(rbTree: &RedBlackTree<T>, node: Pointer, mut reindexed: &mut RedBlackTree<T>){
+fn recursive_reindex<T: std::cmp::PartialOrd + std::cmp::Ord + Copy + Debug + rustc_serialize::Decodable + std::fmt::Display + std::string::ToString>(rbTree: &RedBlackTree<T>, node: Pointer, reindexed: &mut RedBlackTree<T>){
     if !node.is_null(){
         recursive_reindex(rbTree, rbTree[node].right, reindexed);
         reindexed.insert(rbTree[node].value);
